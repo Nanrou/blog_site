@@ -5,7 +5,7 @@ from peewee import *
 
 DATABASE = 'blog.db'
 
-database = SqliteDatabase(DATABASE)
+database = SqliteDatabase(DATABASE, threadlocals=True)
 
 
 class BaseModel(Model):

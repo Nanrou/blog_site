@@ -1,0 +1,3 @@
+graft flaskr/templates
+graft falskr/static
+include flaskr/models.py
