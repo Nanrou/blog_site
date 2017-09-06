@@ -68,6 +68,7 @@ mysite/static/
 instance/
 .webassets-cache
 *.db
+*.sqlite3
 
 # Scrapy stuff:
 .scrapy
