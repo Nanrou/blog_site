@@ -8,6 +8,7 @@ class Config:
     FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
     FLASKY_MAIL_SENDER = 'Admin Nan <13532227149@163.com>'
     FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN') or FLASKY_MAIL_SENDER
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     @staticmethod
     def init_app(app):
@@ -20,21 +21,22 @@ class DevelopmentConfig(Config):
     MAIL_PORT = 25
     MAIL_USE_TLS = True
     MAIL_USERNAME = '13532227149@163.com'
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or '*'
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URI') or 'sqlite:///' + os.path.join(BASEDIR, 'data.sqlite')
+    # 官方文档中指出sqlite后面要跟4个斜杆的，但是源码中还是3个斜杆
 
 
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = \
-        os.environ.get('TEST_DATABASE_URI') or 'sqlite:///' + os.path.join(BASEDIR, 'data-test.sqlite')
+        os.environ.get('TEST_DATABASE_URI') or 'sqlite:///' + os.path.join(BASEDIR, 'data-tests.sqlite')
 
 
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URI') or 'sqlite:///' + os.path.join(BASEDIR, 'pro.sqlite')
 
 
-config = {
+CONFIG = {
     'dev': DevelopmentConfig,
     'testing': TestingConfig,
     'pro': ProductionConfig,

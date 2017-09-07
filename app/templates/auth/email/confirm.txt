@@ -1,0 +1,6 @@
+Dear {{ user.username }}.
+Welcome to my house!
+To confirm your account please click on the follower link:
+{{ url_for('auth.confirm', token=token, _external=True) }}
+Sincerely,
+Lulu & Amao
