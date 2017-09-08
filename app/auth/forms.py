@@ -50,16 +50,16 @@ class PasswordResetRequestForm(FlaskForm):
 
 
 class PasswordResetForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Length(1, 64),
-                                             Email()])
+    # email = StringField('Email', validators=[DataRequired(), Length(1, 64),
+    #                                          Email()])
     password = PasswordField('New Password', validators=[
         DataRequired(), EqualTo('password2', message='Passwords must match')])
     password2 = PasswordField('Confirm password', validators=[DataRequired()])
     submit = SubmitField('Reset Password')
 
-    def validate_email(self, field):
-        if User.query.filter_by(email=field.data).first() is None:
-            raise ValidationError('Unknown email address.')
+    # def validate_email(self, field):
+    #     if User.query.filter_by(email=field.data).first() is None:
+    #         raise ValidationError('Unknown email address.')
 
 
 class ChangeEmailForm(FlaskForm):
