@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, AnonymousUserMixin
@@ -56,6 +58,12 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(64), unique=True, index=True)
     confirmed = db.Column(db.Boolean, default=False)
 
+    name = db.Column(db.String(64))
+    location = db.Column(db.String(64))
+    about_me = db.Column(db.TEXT)
+    member_since = db.Column(db.DateTime(), default=datetime.utcnow)
+    last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
+
     def __init__(self, **kwargs):
         """
         在创建用户时就顺便关联角色，若注册的邮箱为管理员的邮箱，则将其角色设为管理员
@@ -63,7 +71,7 @@ class User(UserMixin, db.Model):
         """
         super(User, self).__init__(**kwargs)
         if self.role is None:
-            if self.email == current_app.config('FLASKY_ADMIN'):
+            if self.email == current_app.config['FLASKY_ADMIN']:
                 self.role = Role.query.filter_by(permissions=0xff).first()
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
@@ -149,6 +157,11 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         db.session.commit()
         return True
+
+    def ping(self):
+        self.last_seen = datetime.utcnow()
+        db.session.add(self)
+        db.session.commit()
 
 
 @login_manager.user_loader

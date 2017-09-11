@@ -24,6 +24,7 @@ class DevelopmentConfig(Config):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URI') or 'sqlite:///' + os.path.join(BASEDIR, 'data.sqlite')
     # 官方文档中指出sqlite后面要跟4个斜杆的，但是源码中还是3个斜杆
+    DEBUG_TB_INTERCEPT_REDIRECTS = False  # 取消打断重定向
 
 
 class TestingConfig(Config):
