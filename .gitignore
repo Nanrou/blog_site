@@ -106,3 +106,4 @@ ENV/
 *.exe
 phantomjs
 2017*/
+tmp/
