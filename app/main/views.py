@@ -1,37 +1,25 @@
-from datetime import datetime
 
-from flask import current_app, render_template, session, redirect, url_for, flash, abort, request, make_response
+from flask import current_app, render_template, redirect, url_for, flash, abort, request, make_response
 from flask_login import login_required, current_user
+from flask_sqlalchemy import get_debug_queries
 
 from . import main
-from .forms import NameForm, EditProfileForm, EditProfileAdminForm, PostForm
+from .forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm
 from .. import db
-from ..models import User, Role, Post
-from ..email import send_email
+from ..models import User, Role, Post, Comment
 from ..decorators import admin_required, permission_required
 from ..models import Permission
 
 
-# @main.route('/', methods=['GET', 'POST'])
-# def index():
-#     # app = current_app._get_current_object()
-#     form = NameForm()
-#     if form.validate_on_submit():
-#         u = User.query.filter_by(username=form.name.data).first()
-#         if u is None:
-#             u = User(username=form.name.data)
-#             db.session.add(user)
-#             session['known'] = False
-#             # if app.config['FLASKY_ADMIN']:
-#             #     send_email(app.config['FLASKY_ADMIN'], 'New User',
-#             #                'mail/user', user=user)
-#         else:
-#             session['known'] = True
-#         session['name'] = form.name.data
-#         form.name.data = ''
-#         return redirect(url_for('main.index'))
-#     return render_template('index.html',  current_time=datetime.utcnow(),
-#                            form=form, name=session.get('name'), known=session.get('known', False))
+@main.after_app_request
+def after_request(response):
+    for query in get_debug_queries():
+        if query.duration >= current_app.config['FLASKY_DB_QUERY_TIMEOUT']:
+            current_app.logger.warning(
+                'Slow query: %s\nParameters: %s\nDuration: %fs\nContext: %s\n'
+                % (query.statement, query.parameters, query.duration,
+                   query.context))
+    return response
 
 
 @main.route('/', methods=['GET', 'POST'])
@@ -39,7 +27,7 @@ def index():
     form = PostForm()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
         _post = Post(body=form.body.data,
-                    author=current_user._get_current_object())  # 拿到真正的用户对象
+                     author=current_user._get_current_object())  # 拿到真正的用户对象
         db.session.add(_post)
         db.session.commit()
         return redirect(url_for('main.index'))
@@ -90,11 +78,42 @@ def for_admins_only():
     return 'For admin'
 
 
-@main.route('/moderator')
+@main.route('/moderate')
 @login_required
-@permission_required(Permission.MODERATE_COMMITS)
-def for_moderators_only():
-    return 'For comment moderators'
+@permission_required(Permission.MODERATE_COMMENTS)
+def moderate():
+    page = request.args.get('page', 1, type=int)
+    pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
+        page, per_page=current_app.config.get('FLASKY_COMMENTS_PER_PAGE'),
+        error_out=False
+    )
+    comments = pagination.items
+    return render_template('moderate.html', comments=comments,
+                           pagination=pagination, page=page)
+
+
+@main.route('/moderate/enable/<int:id_>')
+@login_required
+@permission_required(Permission.MODERATE_COMMENTS)
+def moderate_enable(id_):
+    comment = Comment.query.get_or_404(id_)
+    comment.disabled = False
+    db.session.add(comment)
+    db.session.commit()
+    return redirect(url_for('main.moderate',
+                    page=request.args.get('page', 1)))
+
+
+@main.route('/moderate/disable/<int:id_>')
+@login_required
+@permission_required(Permission.MODERATE_COMMENTS)
+def moderate_disable(id_):
+    comment = Comment.query.get_or_404(id_)
+    comment.disabled = True
+    db.session.add(comment)
+    db.session.commit()
+    return redirect(url_for('main.moderate',
+                            page=request.args.get('page', 1)))
 
 
 @main.route('/user/<username>')
@@ -151,10 +170,27 @@ def edit_profile_admin(id_):
     return render_template('edit_profile.html', form=form, user=u)
 
 
-@main.route('/post/<int:id_>')
+@main.route('/post/<int:id_>', methods=['GET', 'POST'])
 def post(id_):
     p = Post.query.get_or_404(id_)
-    return render_template('post.html', posts=[p])  # 这个posts是为了其他兼容其他视图函数，因为模版接收的是列表形式
+    form = CommentForm()
+    if form.validate_on_submit():
+        comment = Comment(body=form.body.data, post=p, author=current_user._get_current_object())
+        db.session.add(comment)
+        db.session.commit()
+        flash('Your comment has been published.')
+        return redirect((url_for('main.post', id_=p.id, page=-1)))
+    page = request.args.get('page', 1, type=int)
+    if page == -1:  # 显示最后一页
+        page = (p.comments.count() - 1) // \
+               current_app.config.get('FLASKY_COMMENTS_PER_PAGE', 20) + 1  # // 整除
+    pagination = p.comments.order_by(Comment.timestamp.asc()).paginate(
+        page, per_page=current_app.config.get('FLASKY_COMMENTS_PER_PAGE'),
+        error_out=False
+    )
+    comments = pagination.items
+    return render_template('post.html', posts=[p], form=form,
+                           comments=comments, pagination=pagination)  # 这个posts是为了其他兼容其他视图函数，因为模版接收的是列表形式
 
 
 @main.route('/edit/<int:id_>', methods=['GET', 'POST'])

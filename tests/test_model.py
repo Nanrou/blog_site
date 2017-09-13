@@ -99,7 +99,7 @@ class UserModelTestCase(unittest.TestCase):
         Role.insert_roles()
         u = User(email='john@test.com', password='cat')
         self.assertTrue(u.can(Permission.WRITE_ARTICLES))
-        self.assertFalse(u.can(Permission.MODERATE_COMMITS))
+        self.assertFalse(u.can(Permission.MODERATE_COMMENTS))
 
     def test_anonymous_user(self):
         u = AnonymousUser()

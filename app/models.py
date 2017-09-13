@@ -1,7 +1,7 @@
 from datetime import datetime
 import hashlib
 
-from flask import current_app, request
+from flask import current_app, request, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, AnonymousUserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadData
@@ -9,13 +9,14 @@ from markdown import markdown
 import bleach
 
 from . import db, login_manager
+from .exceptions import ValidationError
 
 
 class Permission:
     FOLLOW = 0x01
-    COMMIT = 0x02
+    COMMENT = 0x02
     WRITE_ARTICLES = 0x04
-    MODERATE_COMMITS = 0x08
+    MODERATE_COMMENTS = 0x08
     ADMINISTER = 0x80
 
 
@@ -34,12 +35,12 @@ class Role(db.Model):
     def insert_roles():
         roles = {
             'User': (Permission.FOLLOW |
-                     Permission.COMMIT |
+                     Permission.COMMENT |
                      Permission.WRITE_ARTICLES, True),
             'Moderator': (Permission.FOLLOW |
-                          Permission.COMMIT |
+                          Permission.COMMENT |
                           Permission.WRITE_ARTICLES |
-                          Permission.MODERATE_COMMITS, False),
+                          Permission.MODERATE_COMMENTS, False),
             'Admin': (0xff, False),
         }
         for r in roles:
@@ -71,6 +72,8 @@ class Post(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))  # 传入user的实例就可以拿到它的id了
     body_html = db.Column(db.Text)
 
+    comments = db.relationship('Comment', backref='post', lazy='dynamic')
+
     @staticmethod
     def generate_fake(count=100):
         from random import seed, randint
@@ -88,7 +91,8 @@ class Post(db.Model):
             db.session.commit()
 
     @staticmethod
-    def on_changed_body(target, value, oldvalue, initiator):
+    def on_changed_body(target, value, *args, **kwargs):
+        # def on_changed_body(target, value, oldvalue, initiator):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                         'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
                         'h1', 'h2', 'h3', 'p']
@@ -96,6 +100,28 @@ class Post(db.Model):
             markdown(value, output_format='html'),
             tags=allowed_tags, strip=True
         ))  # 先将文本html化，然后清除多余的标签，最外层的函数是将URL转换成<a>
+
+    def to_json(self):
+        json_post = {
+            'url': url_for('api.get_post', id_=self.id, _external=True),
+            'body': self.body,
+            'body_html': self.body_html,
+            'timestamp': self.timestamp,
+            'author': url_for('api.get_user', id_=self.author_id,
+                              _external=True),
+            'comments': url_for('api.get_post_comments', id_=self.id,
+                                _external=True),
+            'comment_count': self.comments.count()
+        }
+        return json_post
+
+    @staticmethod
+    def from_json(json_post):
+        body = json_post.get('body')
+        if body is None or body == '':
+            raise ValidationError('post does not have a body')
+
+        return Post(body=body)
 
 
 class User(UserMixin, db.Model):
@@ -128,6 +154,8 @@ class User(UserMixin, db.Model):
                                 lazy='dynamic',
                                 cascade='all, delete-orphan')
 
+    comments = db.relationship('Comment', backref='author', lazy='dynamic')
+
     def __init__(self, **kwargs):
         """
         在创建用户时就顺便关联角色，若注册的邮箱为管理员的邮箱，则将其角色设为管理员
@@ -141,7 +169,7 @@ class User(UserMixin, db.Model):
                 self.role = Role.query.filter_by(default=True).first()
         if self.email is not None and self.avatar_hash is None:
             self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
-        self.follow(self)
+        self.followed.append(Follow(followed=self))  # 注意这个语法
 
     def can(self, permissions):
         """
@@ -149,9 +177,9 @@ class User(UserMixin, db.Model):
         :param permissions:
         :return:
         """
-        return self.role is not None and \
-               (self.role.permissions & permissions) == permissions
+        return self.role is not None and (self.role.permissions & permissions) == permissions
 
+    @property
     def is_administrator(self):
         return self.can(Permission.ADMINISTER)
 
@@ -294,6 +322,32 @@ class User(UserMixin, db.Model):
                 db.session.add(user)
                 db.session.commit()
 
+    def generate_auth_token(self, expiration):
+        s = Serializer(current_app.config.get('SECRET_KEY'), expires_in=expiration)
+        return s.dumps({'id': self.id})
+
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(current_app.config.get('SECRET_KEY'))
+        try:
+            data = s.loads(token)
+        except BadData:
+            return None
+        return User.query.get(data['id'])
+
+    def to_json(self):
+        json_user = {
+            'url': url_for('api.get_user', id_=self.id, _external=True),
+            'username': self.username,
+            'member_since': self.member_since,
+            'last_seen': self.last_seen,
+            'posts': url_for('api.get_user_posts', id_=self.id, _external=True),
+            'followed_posts': url_for('api.get_user_followed_posts',
+                                      id_=self.id, _external=True),
+            'post_count': self.posts.count()
+        }
+        return json_user
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -301,12 +355,57 @@ def load_user(user_id):
 
 
 class AnonymousUser(AnonymousUserMixin):
-    def can(self, permissions):
+    def can(self, permissions):  # 这个参数是为了兼容其他
         return False
 
+    @property
     def is_administrator(self):
         return False
 
 login_manager.anonymous_user = AnonymousUser
 
 db.event.listen(Post.body, 'set', Post.on_changed_body)
+
+
+class Comment(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    body_html = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    disabled = db.Column(db.Boolean)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+
+    @staticmethod
+    def on_changed_body(target, value, *args, **kwargs):
+        # def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'i', 'code',
+                        'em', 'strong', ]
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'),
+            tags=allowed_tags, strip=True
+        ))  # 先将文本html化，然后清除多余的标签，最外层的函数是将URL转换成<a>
+
+    def to_json(self):
+        json_comment = {
+            'url': url_for('api.get_comment', id_=self.id, _external=True),
+            'post': url_for('api.get_post', id_=self.post_id, _external=True),
+            'body': self.body,
+            'body_html': self.body_html,
+            'timestamp': self.timestamp,
+            'author': url_for('api.get_user', id_=self.author_id,
+                              _external=True),
+        }
+
+        return json_comment
+
+    @staticmethod
+    def from_json(json_comment):  # 具体要什么元素是由服务器决定的
+        body = json_comment.get('body')
+        if body is None or body == '':
+            raise ValidationError('comment does not have a body')
+        return Comment(body=body)
+
+
+db.event.listen(Comment.body, 'set', Comment.on_changed_body)
