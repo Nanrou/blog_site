@@ -1,0 +1,33 @@
+{% macro pagination_widget(pagination, endpoint) %}
+<ul class="pagination">
+    <li{% if not pagination.get_page() > 1 %} class="disabled"{% endif %}>
+        <a href="{% if pagination.get_page() > 1 %}
+                  {{ url_for(endpoint, page=pagination.get_page() - 1, **kwargs) }}
+                {% else %}#{% endif %}">
+            &laquo;
+        </a>
+    </li>
+    {% for p in range(1, pagination.get_page_count() + 1) %}
+        {% if p %}
+            {% if p == pagination.get_page() %}
+            <li class="active">
+                <a href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a>
+            </li>
+            {% else %}
+            <li>
+                <a href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a>
+            </li>
+            {% endif %}
+        {% else %}
+        <li class="disabled"><a href="#">&hellip;</a></li>
+        {% endif %}
+    {% endfor %}
+    <li{% if not pagination.get_page_count() > pagination.get_page() %} class="disabled"{% endif %}>
+        <a href="{% if pagination.get_page_count() > pagination.get_page() %}
+                  {{ url_for(endpoint, page=pagination.get_page() + 1, **kwargs) }}
+                {% else %}#{% endif %}">
+            &raquo;
+        </a>
+    </li>
+</ul>
+{% endmacro %}

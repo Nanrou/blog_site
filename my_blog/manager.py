@@ -22,7 +22,8 @@ manager.add_command('shell', Shell(make_context=make_shell_context))
 @manager.command
 def create_tables():
     db_wrapper.database.connect()
-    db_wrapper.database.create_tables([User, Post])
+    db_wrapper.database.drop_tables([User, Post], safe=True)
+    db_wrapper.database.create_tables([User, Post], safe=True)
     db_wrapper.database.close()
 
 
@@ -42,15 +43,31 @@ def update_tables():
 
 
 @manager.command
-def create_one():
-    pp = Post.delete().where(Post.id == 3)
-    pp.execute()
-    with open('the elements of computing systems 的读书笔记1.md', 'r', encoding='utf-8') as f:
-        title = f.readline().replace('#', '').strip()
-        body = ''.join(f.readlines())
+def create_all():
+    filenames = []
+    create_times = []
+    titles = []
+    bodys = []
 
-    p = Post(title=title, body=body, )
-    p.save()
+    with open('./post/note.txt', 'r', encoding='utf-8') as rf:
+        for line in rf.readlines():
+            if line.strip():
+                filename, create_time = line.split(',')
+                filenames.append(filename.strip())
+                create_times.append(create_time.strip())
+
+    for filename in filenames:
+        with open('./post/' + filename + '.md', 'r', encoding='utf-8') as f:
+            title = f.readline().replace('#', '').strip()
+            body = ''.join(f.readlines())
+            titles.append(title)
+            bodys.append(body)
+    row_data = []
+    for title, body, timestamp in zip(titles, bodys, create_times):
+        row_data.append({'title': title, 'body': body, 'timestamp': timestamp})
+        pp = Post.create(**{'title': title, 'body': body, 'timestamp': timestamp})
+        pp.save()
+    # Post.insert_many(row_data).execute()
 
 
 if __name__ == '__main__':

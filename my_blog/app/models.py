@@ -1,3 +1,5 @@
+import os
+from random import randint
 from datetime import datetime
 import re
 
@@ -43,10 +45,12 @@ class User(UserMixin, BaseModel):
 
 
 class Post(BaseModel):
-    title = CharField(max_length=128, index=True, unique=True)
+    title = CharField(max_length=128, index=True)
 
     body = TextField()
     body_html = TextField(null=True)
+
+    # category = CharField(max_length=32, null=True)
 
     timestamp = DateTimeField(default=datetime.now(), index=True)
     published = BooleanField(default=1)
@@ -61,11 +65,11 @@ class Post(BaseModel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.img_path is None:
-            self.img_path = url_for('static', filename='img/test.gif')
+            self.img_path = url_for('static', filename='img/pic0{}.jpg'.format(str(randint(1, 7))))
 
     def __setattr__(self, key, value):
         super().__setattr__(key, value)
-        if key == 'body':  # 添加一个
+        if key == 'body':  # 改body属性时，顺便更新body_html
             self.on_changed_body(self, value)
 
     def ping(self):  # TODO:以后改成自动调用，且不应该额外查这一次
@@ -79,15 +83,17 @@ class Post(BaseModel):
                         'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
                         'h1', 'h2', 'h3', 'p', 'img']
         body_html = bleach.linkify(bleach.clean(
-            markdown(value, output_format='html'),
+            markdown(value, output_format='html5'),
             tags=allowed_tags, strip=True
         ))  # 先将文本html化，然后清除多余的标签，最外层的函数是将URL转换成<a>
-        img_pattern = re.compile('!\[(.*)\]\((.*)\)')  # TODO: 后面看怎么改写这个图片的路径
-        _match = img_pattern.finditer(value)
+        # 手动生成img的标签
+        img_pattern = re.compile('!\[(.*)\]\((.*)\)')  # 语法： ![description](href)
+        _match = img_pattern.finditer(value)  # 查找内容
         for g in _match:
             alt, src = g.groups()
-            transform_pattern = '<img alt="{alt}" src="{src}">'.format(alt=alt, src=src)
+            transform_pattern = '<img alt="{alt}" src="{src}">'.format(alt=alt, src='/post_img/' + src.split('/')[-1])
             body_html = str(body_html).replace('<img>', transform_pattern, 1)
+
         target.body_html = body_html
 
 

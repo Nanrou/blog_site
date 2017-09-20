@@ -6,15 +6,16 @@
       <div class="heading-blog">
         {{ post.title }}
       </div>
-      <img src="{{ post.img_path }}" class="img-responsive img-rounded"/>
+      <a class="image-featured" href="javascript:void(0);">
+        <img src="{{ post.img_path }}" class="img-responsive img-rounded"/>
+      </a>
       <div class="blog-info">
-        <span class="label label-primary">Posted on 26th November 2014</span>
+        <span class="label label-primary">{{ post.timestamp }}</span>
         <span class="label label-success">In Technology</span>
         <span class="label label-danger">By Jhon</span>
         <span class="label label-info">
-     <i class="fa fa-thumbs-up"></i>+ 10
-     <i class="fa fa-thumbs-down"></i>-3
-     </span>
+          <i class="fa fa-eye"></i>&ensp;{{ post.reviewed }}
+        </span>
       </div>
       <div class="blog-txt">
         {{ post.body_html | safe }}

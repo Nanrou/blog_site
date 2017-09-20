@@ -2,42 +2,39 @@
 
 {% block main_content %}
   <div class="col-md-9">
+    {% for post in posts %}
     <div class="blog-main">
       <div class="heading-blog">
-        The security is main concern while developing applications
+        {{ post.title }}
       </div>
       <div style="padding:0 5px;">
-        <a href="singlepost.html" class="image featured">
-          <img src="static/img/test.gif" class="img-responsive img-rounded"/>
+        <a href="singlepost.html" class="image-featured">
+          <img src="{{ post.img_path }}" class="img-responsive img-rounded"/>
         </a>
       </div>
       <div class="blog-info">
-        <span class="label label-primary">Posted on 26th November 2014</span>
+        <span class="label label-primary">{{ post.timestamp }}</span>
         <span class="label label-success">In Technology</span>
         <span class="label label-danger">By Jhon</span>
         <span class="label label-info">
-                              <i class="fa fa-thumbs-up"></i>+ 10
-                      <i class="fa fa-thumbs-down"></i>-3
-                          </span>
+         <i class="fa fa-eye"></i>&ensp;{{ post.reviewed }}
+        </span>
       </div>
       <div class="blog-txt">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        Fusce nec tellus non diam feugiat commodo. Sed auctor mauris a tristique imperdiet.
-        Nullam egestas sapien non lectus suscipit, quis tristique odio imperdiet.
-        Nullam elit lacus, tincidunt eget faucibus eget, vestibulum venenatis metus.
-        Praesent efficitur quam aliquam mauris sagittis, vel lacinia risus luctus. Ut vitae bibendum ipsum.
+        {{ post.body_html | truncate(80, end='...', leeway=0) | safe }}
       </div>
       <div class="blog-more">
-        <a href="#">Read More</a>
+        <a href="{{ url_for('main.post', id_=post.id) }}">Read More</a>
       </div>
     </div>
+    {% endfor %}
     <!--BLOG ONE END -->
     <div class="blog-main">
       <div class="heading-blog">
         The security is main concern while developing applications
       </div>
       <div style="padding:0 5px;">
-        <a href="#" class="image featured">
+        <a href="#" class="image-featured">
           <img src="static/img/pic01.jpg" alt=""/>
         </a>
       </div>
@@ -61,32 +58,7 @@
         <a href="#">Read More</a>
       </div>
     </div>
-    <!--BLOG TWO END -->
-    <div class="blog-main">
-      <div class="heading-blog">
-        The security is main concern while developing applications
-      </div>
-      <a href="singlepost.html">
-        <img src="assets/img/3.jpg" class="img-responsive img-rounded"/>
-      </a>
-      <div class="blog-info">
-        <span class="label label-primary">Posted on 26th November 2014</span>
-        <span class="label label-success">In Technology</span>
-        <span class="label label-danger">By Jhon</span>
-        <span class="label label-info">
-                              <i class="fa fa-thumbs-up"></i>+ 10
-                      <i class="fa fa-thumbs-down"></i>-3
-                          </span>
-      </div>
-      <div class="blog-txt">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        Fusce nec tellus non diam feugiat commodo. Sed auctor mauris a tristique imperdiet.
-        Nullam egestas sapien non lectus suscipit, quis tristique odio imperdiet.
-        Nullam elit lacus, tincidunt eget faucibus eget, vestibulum venenatis metus.
-        Praesent efficitur quam aliquam mauris sagittis, vel lacinia risus luctus. Ut vitae bibendum ipsum.
-      </div>
-    </div>
-    <!--BLOG THREE END -->
+
     <nav>
       <ul class="pagination">
         <li class="disabled"><a href="#"><span aria-hidden="true">&laquo;</span><span

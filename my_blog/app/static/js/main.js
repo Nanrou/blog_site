@@ -1,3 +1,4 @@
+
 // Navigation Scripts to Show Header on Scroll-Up
 jQuery(document).ready(function($) {
     var MQL = 768;
@@ -27,3 +28,12 @@ jQuery(document).ready(function($) {
             });
     }
 });
+
+NProgress.configure({ showSpinner: false });
+
+$(document).ready(function(){
+    NProgress.start();
+});
+$(window).on('load', function(){   // jQuery1.8后移除了load，要用on
+    NProgress.done();
+});  

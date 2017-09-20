@@ -5,31 +5,30 @@
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
-  <title>腩肉</title>
+  <meta name="author" content="Nanrou, dananrou.com">
+  {% block Custom_header %}
+  <meta name="description" content="一些事，没有情">
+  
+  <title>腩肉的小站</title>
+  {% endblock %}
   <link rel="shortcut icon" href="{{ url_for('static', filename = 'favicon.ico') }}" type="image/x-icon">
-
-  <!-- Bootstrap Core CSS -->
+  
   <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Additional fonts for this theme -->
+  
   <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  <!--
-  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-  -->
-  <!-- Custom styles for this theme -->
+  
+  <!-- NProgress -->
+  <link href="{{ url_for('static', filename = 'css/nprogress.css') }}" rel="stylesheet">
+  
   <link href="{{ url_for('static', filename = 'css/style.css') }}" rel="stylesheet">
 
-  <!-- Bootstrap Core JS -->
-  <script href="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
-  <script href="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
+  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="{{ url_for('static', filename = 'js/nprogress.js') }}"></script>
+  
   <!-- Custom js for this theme -->
   <script src="{{ url_for('static', filename = 'js/main.js') }}"></script>
-{#  <script src="{{ url_for('static', filename = 'js/clean-blog.js') }}"></script>#}
+  {{ moment.include_moment() }}
 
 </head>
 
@@ -80,43 +79,6 @@
       </div>
     </div>
   </header>
-  <!--
-      <section class="header-section">
-          <div class="container">
-              <div class="row">
-                  <div class="col-md-2">
-                      <img src="assets/img/person.jpg" class="img-circle img-responsive" />
-                  </div>
-                  <div class="col-md-5 text-center">
-                      <h1><strong>Jhon Alexan </strong></h1>
-                      <h4>Blogger & Designer</h4>
-                  </div>
-                  <div class="col-md-5">
-                      <h3>WHO M I :</h3>
-
-                      I am a 26 years old guy who loves bloggging and designing .
-                        I will provide all my works for free here with some good piece of information.
-                       You can reach me at <i><strong>info@mydomain.com</strong></i>
-                  </div>
-              </div>
-          </div>
-      </section>
-      <!--HOME SECTION END
-
-      <section>
-          <div class="container">
-              <div class="row">
-                  <div class="col-md-2 spon-txt">
-                      <span>My Sponsers: </span>
-                  </div>
-                  <div class="col-md-10">
-                      <img src="assets/img/clients.png" alt="" class="img-rounded img-responsive" />
-                  </div>
-              </div>
-          </div>
-      </section>
-  -->
-  <!--SPONSORS SECTION END-->
   <hr />
   <section>
     <div class="container">
