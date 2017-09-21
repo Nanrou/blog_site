@@ -6,7 +6,7 @@ from flask_script import Manager, Shell
 from playhouse.migrate import SqliteMigrator, migrate
 
 from app import create_app, db_wrapper
-from app.models import User, Post
+from app.models import User, Post, Category
 
 
 app = create_app(os.environ.get('FLASK_CONFIG') or 'default')
@@ -14,7 +14,7 @@ manager = Manager(app)
 
 
 def make_shell_context():
-    return dict(app=app, User=User, Post=Post)
+    return dict(app=app, User=User, Post=Post, Category=Category)
 
 manager.add_command('shell', Shell(make_context=make_shell_context))
 
@@ -22,8 +22,8 @@ manager.add_command('shell', Shell(make_context=make_shell_context))
 @manager.command
 def create_tables():
     db_wrapper.database.connect()
-    db_wrapper.database.drop_tables([User, Post], safe=True)
-    db_wrapper.database.create_tables([User, Post], safe=True)
+    db_wrapper.database.drop_tables([User, Post, Category], safe=True)
+    db_wrapper.database.create_tables([User, Post, Category], safe=True)
     db_wrapper.database.close()
 
 
@@ -44,12 +44,13 @@ def update_tables():
 
 @manager.command
 def create_all():
+    create_tables()
     filenames = []
     create_times = []
     titles = []
     bodys = []
 
-    with open('./post/note.txt', 'r', encoding='utf-8') as rf:
+    with open('./post/nnote.txt', 'r', encoding='utf-8') as rf:
         for line in rf.readlines():
             if line.strip():
                 filename, create_time = line.split(',')

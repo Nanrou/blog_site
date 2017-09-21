@@ -6,7 +6,7 @@ import re
 from flask import url_for
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from peewee import CharField, IntegerField, DateTimeField, TextField, BooleanField
+from peewee import CharField, IntegerField, DateTimeField, TextField, BooleanField, ForeignKeyField
 from markdown import markdown
 import bleach
 
@@ -44,13 +44,21 @@ class User(UserMixin, BaseModel):
         return check_password_hash(self.password_hash, password)
 
 
+class Category(BaseModel):
+    category = CharField(max_length=32, index=True)
+    # count = IntegerField(default=0)  # TODO 直接设置方法，自动或者手动更新数量，不用到时再查
+
+    class Meta:
+        db_table = 'categorys'
+
+
 class Post(BaseModel):
     title = CharField(max_length=128, index=True)
 
     body = TextField()
     body_html = TextField(null=True)
 
-    # category = CharField(max_length=32, null=True)
+    category = ForeignKeyField(Category, related_name='cate', null=True)
 
     timestamp = DateTimeField(default=datetime.now(), index=True)
     published = BooleanField(default=1)
@@ -83,11 +91,12 @@ class Post(BaseModel):
                         'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
                         'h1', 'h2', 'h3', 'p', 'img']
         body_html = bleach.linkify(bleach.clean(
-            markdown(value, output_format='html5'),
+            markdown(value, output_format='html5',
+                     extensions=['markdown.extensions.fenced_code', 'markdown.extensions.codehilite']),
             tags=allowed_tags, strip=True
         ))  # 先将文本html化，然后清除多余的标签，最外层的函数是将URL转换成<a>
         # 手动生成img的标签
-        img_pattern = re.compile('!\[(.*)\]\((.*)\)')  # 语法： ![description](href)
+        img_pattern = re.compile('!\[(.*)\]\((.*)\)')  # markdown语法： ![description](href)
         _match = img_pattern.finditer(value)  # 查找内容
         for g in _match:
             alt, src = g.groups()

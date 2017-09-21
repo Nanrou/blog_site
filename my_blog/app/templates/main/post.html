@@ -1,5 +1,17 @@
 {% extends 'main/base.html' %}
 
+{% block Custom_header %}
+<meta name="description" content="{{ post.title }}">
+
+<title>腩肉的小站 {{ post.title }}</title>
+{% endblock %}
+
+
+{% block custom_script %}
+  {{ moment.include_moment() }}
+  {{ moment.lang("zh-cn") }}
+{% endblock %}
+
 {% block main_content %}
   <div class="col-md-9">
     <div class="blog-main">
@@ -11,7 +23,9 @@
       </a>
       <div class="blog-info">
         <span class="label label-primary">{{ post.timestamp }}</span>
-        <span class="label label-success">In Technology</span>
+        {% if post.category %}
+          <span class="label label-success">{{ post.category.category }}</span>
+        {% endif %}
         <span class="label label-danger">By Jhon</span>
         <span class="label label-info">
           <i class="fa fa-eye"></i>&ensp;{{ post.reviewed }}
@@ -21,6 +35,7 @@
         {{ post.body_html | safe }}
       </div>
     </div>
+    <p>此文章发布于&ensp;{{ moment(post.timestamp).fromNow() }}，可能由于时间关系已不再适用，请结合实际情况参考。</p>
     <!--BLOG MAIN SECTION END-->
 
     <h3><strong>Recent Comments :</strong></h3>
@@ -107,4 +122,5 @@
     </ul>
     <!--COMMENTS SECTION END-->
   </div>
+
 {% endblock %}

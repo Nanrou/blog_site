@@ -19,17 +19,25 @@
   
   <!-- NProgress -->
   <link href="{{ url_for('static', filename = 'css/nprogress.css') }}" rel="stylesheet">
-  
+  <!-- waves -->
+{#  <link href="{{ url_for('static', filename = 'css/waves.css') }}" rel="stylesheet"> #}
+
   <link href="{{ url_for('static', filename = 'css/style.css') }}" rel="stylesheet">
 
   <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <!-- waves -->
+  <script src="{{ url_for('static', filename = 'js/waves.js') }}"></script>
+
   <script src="{{ url_for('static', filename = 'js/nprogress.js') }}"></script>
-  
+
   <!-- Custom js for this theme -->
   <script src="{{ url_for('static', filename = 'js/main.js') }}"></script>
-  {{ moment.include_moment() }}
+  {% block custom_script %}
+  {% endblock %}
 
+</style>
 </head>
 
 <body>
@@ -91,22 +99,12 @@
             <li class="list-group-item">
               <strong>Main Categories</strong>
             </li>
+            {% for category in cc_pr %}
             <li class="list-group-item">
-              <span class="badge">104</span>
-              Technology
+              <span class="badge">{{ category.cate_prefetch | count }}</span>
+              {{ category.category }}
             </li>
-            <li class="list-group-item">
-              <span class="badge">34</span>
-              Blogging
-            </li>
-            <li class="list-group-item">
-              <span class="badge">10</span>
-              Information
-            </li>
-            <li class="list-group-item">
-              <span class="badge">50</span>
-              Security
-            </li>
+            {% endfor %}
             <li class="list-group-item">
               <strong>Other Categories</strong>
             </li>
@@ -134,11 +132,11 @@
             </li>
             <li class="list-group-item">
               <a href="#">
-                <img src="assets/img/ad1.jpg" class="img-responsive" />
+                <img src="#" class="img-responsive" />
               </a>
               <br />
               <a href="#">
-                <img src="assets/img/ad2.jpg" class="img-responsive" />
+                <img src="#" class="img-responsive" />
               </a>
             </li>
           </ul>
@@ -161,6 +159,15 @@
     </div>
   </section>
   <hr />
+
+<p id="colored-icon" class="text-center">
+    <a href="javascript:void(0);" id="to_top">
+    <i class="fa fa-arrow-up float-icon"></i>
+    </a>
+</p>
 </div>
+<script type="text/javascript">
+    Waves.attach('.float-icon', ['waves-circle', 'waves-float']);
+</script>
 </body>
 </html>

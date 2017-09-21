@@ -10,9 +10,7 @@ from ..models import Post
 def home():
 
     page = request.args.get('page', 1, type=int)
-    pagination = PaginatedQuery(Post, 12, page, check_bounds=True)
-    total_page = range(1, pagination.get_page_count()+1)
-    setattr(pagination, 'total_page', total_page)
+    pagination = PaginatedQuery(Post, 8, page, check_bounds=True)
 
     _posts = pagination.get_object_list()
 

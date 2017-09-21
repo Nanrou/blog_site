@@ -16,17 +16,25 @@ jQuery(document).ready(function($) {
                     //if scrolling up...
                     if (currentTop > 0 && $('#mainNav').hasClass('is-fixed')) {
                         $('#mainNav').addClass('is-visible');
+                        $('#colored-icon').addClass('is-fixed is-visible');
                     } else {
                         $('#mainNav').removeClass('is-visible is-fixed');
+                        $('#colored-icon').removeClass('is-visible is-fixed');
                     }
                 } else if (currentTop > this.previousTop) {
                     //if scrolling down...
                     $('#mainNav').removeClass('is-visible');
-                    if (currentTop > headerHeight && !$('#mainNav').hasClass('is-fixed')) $('#mainNav').addClass('is-fixed');
+                    $('#colored-icon').removeClass('is-fixed');
+                    if (currentTop > headerHeight && !$('#mainNav').hasClass('is-fixed')){
+                        $('#mainNav').addClass('is-fixed');
+                    }
                 }
                 this.previousTop = currentTop;
             });
-    }
+    };
+    $("#to_top").click(function() {
+        $("html,body").animate({"scrollTop":0}, 200);
+    });
 });
 
 NProgress.configure({ showSpinner: false });
@@ -37,3 +45,4 @@ $(document).ready(function(){
 $(window).on('load', function(){   // jQuery1.8后移除了load，要用on
     NProgress.done();
 });  
+
