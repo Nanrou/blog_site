@@ -20,10 +20,12 @@ def home():
 @main.route('/post', defaults={'id_': 1})
 @main.route('/post/<int:id_>')
 def post(id_):
-    public_posts = Post.select().where(Post.published == 1)
-    _post = get_object_or_404(public_posts, (Post.id == id_))
+    _post = get_object_or_404(Post.select().where(Post.published == 1), (Post.id == id_))
     _post.ping()
-    return render_template('main/post.html', post=_post)
+    
+    pagination = PaginatedQuery(Post.select(Post.id, Post.title).where(Post.published == 1), 1, _post.id, check_bounds=True)
+    
+    return render_template('main/post.html', post=_post, pagination=pagination)
 
 
 @main.route('/post_img/<string:img_id>')  # 图片的导航
