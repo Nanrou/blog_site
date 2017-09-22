@@ -234,10 +234,10 @@ body {
   padding: 40px 5px;
   padding-top: 60px;
 }
-    .header-section img {
-        max-width: 150px;
-        border: 2px solid #fff;
-    }
+.header-section img {
+    max-width: 150px;
+    border: 2px solid #fff;
+}
 
 .spon-txt {
     padding: 40px 5px;
@@ -312,13 +312,41 @@ a.image-featured:hover img {
             transform: scale(1.05);
 }
 
+.calendar {
+    border-collapse: separate;
+    border-spacing: 3px;
+    font-size: 14px;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.calendar a {
+    cursor: default;
+}
+th.month {
+    font-size: 24px;
+}
+table.calendar th, table.calendar td{
+    text-align: center;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    }
+table.calendar td{
+    background: #EBEDF0;   
+}
 
+table.calendar td.noday {
+    background: transparent;
+}
 
+table.calendar td.less {
+    background: #7BC96F;
+}
 
-
-
-
-
+table.calendar td.more {
+    background: #239A3B;
+}
 
 
 

@@ -46,10 +46,17 @@ class User(UserMixin, BaseModel):
 
 class Category(BaseModel):
     category = CharField(max_length=32, index=True)
-    # count = IntegerField(default=0)  # TODO 直接设置方法，自动或者手动更新数量，不用到时再查
+    posts_count = IntegerField(default=0)
 
     class Meta:
         db_table = 'categorys'
+
+    @classmethod
+    def count_posts(cls):  # 直接得到分类数量，不用到时再数。可以手动或者自动去执行
+        for i in range(1, cls.select(cls.id).count()+1):
+            cc = cls.get(id=i)
+            cc.posts_count = cc.cate.select(Post.id).count()
+            cc.save()
 
 
 class Post(BaseModel):
@@ -81,9 +88,10 @@ class Post(BaseModel):
             self.on_changed_body(self, value)
 
     def ping(self):  # TODO:以后改成自动调用，且不应该额外查这一次
-        update = Post.update(reviewed=Post.reviewed + 1)\
-            .where(Post.id == self.id)
-        update.execute()
+        # q = Post.update(reviewed=Post.reviewed + 1)\
+        #     .where(Post.id == self.id)  # update是class method
+        # q.execute()  # 为什么不是立即调用
+        self.reviewed += 1
         self.save()
 
     @staticmethod
@@ -105,5 +113,4 @@ class Post(BaseModel):
             body_html = str(body_html).replace('<img>', transform_pattern, 1)
 
         target.body_html = body_html
-
 

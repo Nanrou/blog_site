@@ -49,13 +49,21 @@ def create_all():
     create_times = []
     titles = []
     bodys = []
+    post_cate = []
 
-    with open('./post/nnote.txt', 'r', encoding='utf-8') as rf:
+    cates = ['Django', '日常踩坑', '读书笔记', 'LeetCode', 'python', '一些翻译', 'linux']
+    cate_dict = dict((k, v) for k, v in zip(cates, range(1, len(cates) + 1)))
+    for c in cates:
+        cc = Category(category=c)
+        cc.save()
+
+    with open('./post/nnnote.txt', 'r', encoding='utf-8') as rf:
         for line in rf.readlines():
             if line.strip():
-                filename, create_time = line.split(',')
-                filenames.append(filename.strip())
-                create_times.append(create_time.strip())
+                filename, create_time, cate = map(lambda s: s.strip(), line.split(','))
+                filenames.append(filename)
+                create_times.append(create_time)
+                post_cate.append(cate_dict[cate])
 
     for filename in filenames:
         with open('./post/' + filename + '.md', 'r', encoding='utf-8') as f:
@@ -63,12 +71,13 @@ def create_all():
             body = ''.join(f.readlines())
             titles.append(title)
             bodys.append(body)
+
     row_data = []
-    for title, body, timestamp in zip(titles, bodys, create_times):
+    for title, body, timestamp, cate in zip(titles, bodys, create_times, post_cate):
         row_data.append({'title': title, 'body': body, 'timestamp': timestamp})
-        pp = Post.create(**{'title': title, 'body': body, 'timestamp': timestamp})
+        pp = Post.create(**{'title': title, 'body': body, 'timestamp': timestamp, 'category': cate})
         pp.save()
-    # Post.insert_many(row_data).execute()
+    # Post.insert_many(row_data).execute()  # 这个不调用__init__
 
 
 if __name__ == '__main__':

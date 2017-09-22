@@ -4,13 +4,12 @@ from playhouse.flask_utils import get_object_or_404, PaginatedQuery
 
 from . import main
 from ..models import Post
+from .my_tools import MyPaginatedQuery
 
 
 @main.route('/')
 def home():
-
-    page = request.args.get('page', 1, type=int)
-    pagination = PaginatedQuery(Post, 8, page, check_bounds=True)
+    pagination = PaginatedQuery(Post, 8, check_bounds=True)
 
     _posts = pagination.get_object_list()
 
@@ -21,11 +20,13 @@ def home():
 @main.route('/post/<int:id_>')
 def post(id_):
     _post = get_object_or_404(Post.select().where(Post.published == 1), (Post.id == id_))
-    _post.ping()
-    
-    pagination = PaginatedQuery(Post.select(Post.id, Post.title).where(Post.published == 1), 1, _post.id, check_bounds=True)
-    
-    return render_template('main/post.html', post=_post, pagination=pagination)
+    _post.ping(id_)
+
+    _public_posts = Post.select(Post.id, Post.title).where(Post.published == 1)
+
+    _prev = _public_posts.order_by(Post.id).where(Post.id > _post.id).first()
+    _next = _public_posts.where(Post.id < _post.id).first()
+    return render_template('main/post.html', post=_post, next_post=_next, prev_post=_prev)
 
 
 @main.route('/post_img/<string:img_id>')  # 图片的导航

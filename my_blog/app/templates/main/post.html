@@ -124,24 +124,24 @@
 
     <nav class="container post-pagination">
       <div class="post-pagination-prev">
-        <a class="post-pagination-link">
+        <a class="post-pagination-link" href="{% if prev_post %}{{ url_for('main.post', id_=prev_post.id) }}{% else %}{{ url_for('main.home') }}{% endif %}">
           <div class="tips">
             <i class="fa fa-angle-left"></i>
             Prev
           </div>
           <h4 class="title">
-            bbbbbb
+            {% if prev_post %}{{ prev_post.title }}{% else %}没有了{% endif %}
           </h4>
         </a>
       </div>
       <div class="post-pagination-next">
-        <a class="post-pagination-link" href="">
+        <a class="post-pagination-link" href="{% if next_post %}{{ url_for('main.post', id_=next_post.id) }}{% else %}{{ url_for('main.home') }}{% endif %}">
           <div class="tips">
             Next
             <i class="fa fa-angle-right"></i>
           </div>
           <h4 class="title">
-            {{  }}
+            {% if next_post %}{{ next_post.title }}{% else %}没有了{% endif %}
           </h4>
         </a>
       </div>
