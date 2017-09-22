@@ -84,6 +84,7 @@ class Post(BaseModel):
         update = Post.update(reviewed=Post.reviewed + 1)\
             .where(Post.id == self.id)
         update.execute()
+        self.save()
 
     @staticmethod
     def on_changed_body(target, value):
