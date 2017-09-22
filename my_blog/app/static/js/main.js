@@ -16,17 +16,18 @@ jQuery(document).ready(function($) {
                     //if scrolling up...
                     if (currentTop > 0 && $('#mainNav').hasClass('is-fixed')) {
                         $('#mainNav').addClass('is-visible');
-                        $('#colored-icon').addClass('is-fixed is-visible');
+                        $('#to_top').addClass('is-unvisible');
                     } else {
                         $('#mainNav').removeClass('is-visible is-fixed');
-                        $('#colored-icon').removeClass('is-visible is-fixed');
+                        
                     }
                 } else if (currentTop > this.previousTop) {
                     //if scrolling down...
                     $('#mainNav').removeClass('is-visible');
-                    $('#colored-icon').removeClass('is-fixed');
+                    $('#to_top').removeClass('is-unvisible');
                     if (currentTop > headerHeight && !$('#mainNav').hasClass('is-fixed')){
                         $('#mainNav').addClass('is-fixed');
+                        
                     }
                 }
                 this.previousTop = currentTop;

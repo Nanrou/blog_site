@@ -37,7 +37,6 @@
   {% block custom_script %}
   {% endblock %}
 
-</style>
 </head>
 
 <body>
@@ -160,14 +159,14 @@
   </section>
   <hr />
 
-<p id="colored-icon" class="text-center">
-    <a href="javascript:void(0);" id="to_top">
-    <i class="fa fa-arrow-up float-icon"></i>
-    </a>
-</p>
+<a href="javascript:void(0);" id="to_top" class="is-unvisible">
+<i class="fa fa-arrow-up float-icon waves-circle waves-float"></i>
+</a>
+{% block footer %}
+{% endblock %}
 </div>
-<script type="text/javascript">
-    Waves.attach('.float-icon', ['waves-circle', 'waves-float']);
-</script>
+{#<script type="text/javascript">#}
+{#    Waves.attach('.float-icon', ['waves-circle', 'waves-float']);#}
+{#</script>#}
 </body>
 </html>
