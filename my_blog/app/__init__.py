@@ -9,6 +9,11 @@ from playhouse.flask_utils import FlaskDB
 
 from config import CONFIG
 
+import logging
+logger = logging.getLogger('peewee')
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler())
+
 bootstrap = Bootstrap()
 moment = Moment()
 db_wrapper = FlaskDB()

@@ -20,7 +20,7 @@ def home():
 @main.route('/post/<int:id_>')
 def post(id_):
     _post = get_object_or_404(Post.select().where(Post.published == 1), (Post.id == id_))
-    _post.ping(id_)
+    _post.ping()  # 手动刷新
 
     _public_posts = Post.select(Post.id, Post.title).where(Post.published == 1)
 

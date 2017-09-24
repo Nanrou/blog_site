@@ -33,9 +33,9 @@
       </div>
       <div class="blog-txt">
         {{ post.body_html | safe }}
+        <p>此文章发布于&ensp;{{ moment(post.timestamp).fromNow() }}，可能由于时间关系已不再适用，请结合实际情况参考。</p>
       </div>
     </div>
-    <p>此文章发布于&ensp;{{ moment(post.timestamp).fromNow() }}，可能由于时间关系已不再适用，请结合实际情况参考。</p>
     <!--BLOG MAIN SECTION END-->
 
     <h3><strong>Recent Comments :</strong></h3>

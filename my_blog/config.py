@@ -35,6 +35,7 @@ class TestingConfig(Config):
 class ProductionConfig(Config):
     pass
 
+
 CONFIG = {
     'dev': DevelopmentConfig,
     'testing': TestingConfig,

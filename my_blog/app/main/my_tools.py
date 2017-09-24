@@ -33,6 +33,7 @@ class MyPaginatedQuery(PaginatedQuery):
 month_dict = {'9': '九月布鲁'}
 
 
+@main.app_context_processor
 def product_month():
     cc = Calendar(firstweekday=6)
     now_ = datetime.now()
@@ -61,7 +62,7 @@ def product_month():
         week_html = '<tr>' + week_html + '</tr>'
         month_html += week_html
 
-    ss = '''<table class="calendar"><tbody><tr><th colspan="7">{month}</th></tr>
+    ss = '''<table class="calendar"><tbody><tr><th class="month" colspan="7">{month}</th></tr>
     <tr>
         <th class="sun">Sun</th>
         <th class="mon">Mon</th>
@@ -74,7 +75,8 @@ def product_month():
     {td}
     </tbody>
 </table>'''
-    return ss.format(month=month_dict[str(now_.month)], td=month_html).replace('\n', '').replace('    ', '')
+    return dict(product_calendar=ss.format(
+        month=month_dict[str(now_.month)], td=month_html).replace('\n', '').replace('    ', ''))
 
 
 if __name__ == '__main__':

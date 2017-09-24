@@ -19,15 +19,20 @@ class BaseModel(db_wrapper.Model):
 
 
 class User(UserMixin, BaseModel):
-    username = CharField(max_length=32, index=True)
-    password_hash = CharField(max_length=128)
+    """
+    以邮箱作为用户名，
+    """
+
     email = CharField(max_length=32, index=True)
+    password_hash = CharField(max_length=128, null=True)
 
     nickname = CharField(max_length=32)
-    avatar_hash = CharField(max_length=128)
+    avatar_hash = CharField(max_length=128, null=True)
 
     member_since = DateTimeField(default=datetime.now())
     last_seen = DateTimeField(default=datetime.now())
+
+    confirmed = BooleanField(default=False)
 
     class Meta:
         db_table = 'users'
@@ -91,6 +96,10 @@ class Post(BaseModel):
         # q = Post.update(reviewed=Post.reviewed + 1)\
         #     .where(Post.id == self.id)  # update是class method
         # q.execute()  # 为什么不是立即调用
+        # with db_wrapper.database.transaction() as txn:
+        #     q = Post.update(reviewed=Post.reviewed + 1).where(Post.id == self.id)  # update是class method
+        #     q.execute()  # 为什么不是立即调用
+            # txn.commit()
         self.reviewed += 1
         self.save()
 
