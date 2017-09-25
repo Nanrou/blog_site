@@ -16,6 +16,7 @@ manager = Manager(app)
 def make_shell_context():
     return dict(app=app, User=User, Post=Post, Category=Category)
 
+
 manager.add_command('shell', Shell(make_context=make_shell_context))
 
 

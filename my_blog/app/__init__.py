@@ -6,6 +6,7 @@ from flask_login import LoginManager
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_pagedown import PageDown
 from playhouse.flask_utils import FlaskDB
+from werkzeug.contrib.cache import
 
 from config import CONFIG
 
@@ -21,6 +22,7 @@ mail = Mail()
 debugToolBar = DebugToolbarExtension()
 pagedown = PageDown()
 
+# 开启DB的logger
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'

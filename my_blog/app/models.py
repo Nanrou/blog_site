@@ -20,7 +20,8 @@ class BaseModel(db_wrapper.Model):
 
 class User(UserMixin, BaseModel):
     """
-    以邮箱作为用户名，
+    以邮箱作为用户名
+    加个验证码来允许回复就好了，不一定要有密码
     """
 
     email = CharField(max_length=32, index=True)
@@ -33,6 +34,7 @@ class User(UserMixin, BaseModel):
     last_seen = DateTimeField(default=datetime.now())
 
     confirmed = BooleanField(default=False)
+    intact = BooleanField(default=False)
 
     class Meta:
         db_table = 'users'
@@ -47,6 +49,10 @@ class User(UserMixin, BaseModel):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def ping(self):
+        q = User.update(last_seen=datetime.now()).where(User.id == self.id)
+        q.execute()
 
 
 class Category(BaseModel):
@@ -70,7 +76,7 @@ class Post(BaseModel):
     body = TextField()
     body_html = TextField(null=True)
 
-    category = ForeignKeyField(Category, related_name='cate', null=True)
+    category = ForeignKeyField(Category, related_name='posts', null=True)
 
     timestamp = DateTimeField(default=datetime.now(), index=True)
     published = BooleanField(default=1)
@@ -93,15 +99,15 @@ class Post(BaseModel):
             self.on_changed_body(self, value)
 
     def ping(self):  # TODO:以后改成自动调用，且不应该额外查这一次
-        # q = Post.update(reviewed=Post.reviewed + 1)\
-        #     .where(Post.id == self.id)  # update是class method
-        # q.execute()  # 为什么不是立即调用
+        q = Post.update(reviewed=Post.reviewed + 1)\
+            .where(Post.id == self.id)  # update是class method
+        q.execute()  # 为什么不是立即调用，而是在teardown阶段才调用
         # with db_wrapper.database.transaction() as txn:
         #     q = Post.update(reviewed=Post.reviewed + 1).where(Post.id == self.id)  # update是class method
         #     q.execute()  # 为什么不是立即调用
             # txn.commit()
-        self.reviewed += 1
-        self.save()
+        # self.reviewed += 1
+        # self.save()
 
     @staticmethod
     def on_changed_body(target, value):
@@ -122,4 +128,12 @@ class Post(BaseModel):
             body_html = str(body_html).replace('<img>', transform_pattern, 1)
 
         target.body_html = body_html
+
+
+class Comment(BaseModel):
+    content = CharField(max_length=255)
+    author_id = ForeignKeyField(User, related_name='comments')
+    post_id = ForeignKeyField(Post, related_name='comments')
+
+    # TODO 相互回复的关系
 
