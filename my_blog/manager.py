@@ -6,7 +6,7 @@ from flask_script import Manager, Shell
 from playhouse.migrate import SqliteMigrator, migrate
 
 from app import create_app, db_wrapper
-from app.models import User, Post, Category
+from app.models import User, Post, Category, Comment
 
 
 app = create_app(os.environ.get('FLASK_CONFIG') or 'default')
@@ -14,7 +14,7 @@ manager = Manager(app)
 
 
 def make_shell_context():
-    return dict(app=app, User=User, Post=Post, Category=Category)
+    return dict(app=app, User=User, Post=Post, Category=Category, Comment=Comment)
 
 
 manager.add_command('shell', Shell(make_context=make_shell_context))
@@ -23,15 +23,15 @@ manager.add_command('shell', Shell(make_context=make_shell_context))
 @manager.command
 def create_tables():
     db_wrapper.database.connect()
-    db_wrapper.database.drop_tables([User, Post, Category], safe=True)
-    db_wrapper.database.create_tables([User, Post, Category], safe=True)
+    db_wrapper.database.drop_tables([User, Post, Category, Comment], safe=True)
+    db_wrapper.database.create_tables([User, Post, Category, Comment], safe=True)
     db_wrapper.database.close()
 
 
 @manager.command
 def drop_tables():
     db_wrapper.database.connect()
-    db_wrapper.database.drop_tables([User, Post], safe=True)
+    db_wrapper.database.drop_tables([User, Post, Comment], safe=True)
     db_wrapper.database.close()
 
 
@@ -46,6 +46,7 @@ def update_tables():
 @manager.command
 def create_all():
     create_tables()
+
     filenames = []
     create_times = []
     titles = []
@@ -78,7 +79,25 @@ def create_all():
         row_data.append({'title': title, 'body': body, 'timestamp': timestamp})
         pp = Post.create(**{'title': title, 'body': body, 'timestamp': timestamp, 'category': cate})
         pp.save()
-    # Post.insert_many(row_data).execute()  # 这个不调用__init__
+
+    row_data = []
+    names = ['lulu', 'amao', 'john']
+    for n in names:
+        row_data.append({'nickname': n, 'email': 'bbb@cc.com'})
+
+    User.insert_many(row_data).execute()  # 这个不调用__init__
+
+    Comment.create(content='lulu say something', author_id=1, post_id=52, timestamp=datetime.now())
+    time.sleep(0.5)
+    Comment.create(content='amao say something to lulu', author_id=2, post_id=52, timestamp=datetime.now(), quote_comment=1)
+    time.sleep(0.5)
+    Comment.create(content='amao say other thing to lulu', author_id=2, post_id=52, timestamp=datetime.now(), quote_comment=1)
+    time.sleep(0.5)
+    Comment.create(content='lulu say something back to amao', author_id=1, post_id=52, timestamp=datetime.now(), quote_comment=3)
+    time.sleep(0.5)
+    Comment.create(content='john say something to amao', author_id=3, post_id=52, timestamp=datetime.now(), quote_comment=2)
+    time.sleep(0.5)
+    Comment.create(content='john say something', author_id=3, post_id=52, timestamp=datetime.now())
 
 
 if __name__ == '__main__':

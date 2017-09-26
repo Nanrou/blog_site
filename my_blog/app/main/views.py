@@ -3,7 +3,7 @@ from flask import render_template, Response, send_file, request
 from playhouse.flask_utils import get_object_or_404, PaginatedQuery
 
 from . import main
-from ..models import Post, Category
+from ..models import Post, Category, Comment
 from .my_tools import MyPaginatedQuery
 
 
@@ -26,6 +26,9 @@ def post(id_):
 
     _prev = _public_posts.order_by(Post.id).where(Post.id > _post.id).first()
     _next = _public_posts.where(Post.id < _post.id).first()
+
+    comments = _post.comments.where(Comment.quote_comment.is_null())  # TODO 继续补完这里的逻辑
+
     return render_template('main/post.html', post=_post, next_post=_next, prev_post=_prev)
 
 

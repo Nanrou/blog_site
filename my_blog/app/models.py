@@ -126,8 +126,15 @@ class Post(BaseModel):
 
 class Comment(BaseModel):
     content = CharField(max_length=255)
-    author_id = ForeignKeyField(User, related_name='comments')
-    post_id = ForeignKeyField(Post, related_name='comments')
+    author = ForeignKeyField(User, related_name='comments')
+    post = ForeignKeyField(Post, related_name='comments')
 
+    timestamp = DateTimeField(default=datetime.now())
+
+    quote_comment = ForeignKeyField('self', null=True, related_name='quote')
+
+    class Meta:
+        db_table = 'comments'
+        order_by = ('-timestamp',)
     # TODO 相互回复的关系
 
