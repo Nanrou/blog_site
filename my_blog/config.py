@@ -1,5 +1,7 @@
 import os
 import unfollow
+from peewee import SqliteDatabase
+
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -23,7 +25,8 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
     DEBUG_TB_INTERCEPT_REDIRECTS = False  # 取消打断重定向
-    DATABASE = os.environ.get('DATABASE') or 'sqlite:///default.db'
+    DATABASE_URL = os.environ.get('DATABASE') or 'sqlite:///default.db'
+    DATABASE = SqliteDatabase('./default.db', autocommit=False)
 
 
 class TestingConfig(Config):

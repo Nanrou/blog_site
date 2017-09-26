@@ -6,11 +6,12 @@ from flask_login import LoginManager
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_pagedown import PageDown
 from playhouse.flask_utils import FlaskDB
-from werkzeug.contrib.cache import
+from werkzeug.contrib.cache import SimpleCache
 
 from config import CONFIG
 
 import logging
+
 logger = logging.getLogger('peewee')
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler())
@@ -22,10 +23,11 @@ mail = Mail()
 debugToolBar = DebugToolbarExtension()
 pagedown = PageDown()
 
-# 开启DB的logger
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
+
+cache = SimpleCache()
 
 
 def create_app(config_name):

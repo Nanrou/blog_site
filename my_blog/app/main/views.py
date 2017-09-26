@@ -3,13 +3,13 @@ from flask import render_template, Response, send_file, request
 from playhouse.flask_utils import get_object_or_404, PaginatedQuery
 
 from . import main
-from ..models import Post
+from ..models import Post, Category
 from .my_tools import MyPaginatedQuery
 
 
 @main.route('/')
 def home():
-    pagination = PaginatedQuery(Post, 8, check_bounds=True)
+    pagination = PaginatedQuery(Post.select(Post, Category).join(Category), 8, check_bounds=True)
 
     _posts = pagination.get_object_list()
 
@@ -20,7 +20,7 @@ def home():
 @main.route('/post/<int:id_>')
 def post(id_):
     _post = get_object_or_404(Post.select().where(Post.published == 1), (Post.id == id_))
-    _post.ping()  # 手动刷新
+    _post.ping()  # 手动刷新。因为这个操作是直接更改数据库的，不对现在的这个实例产生影响
 
     _public_posts = Post.select(Post.id, Post.title).where(Post.published == 1)
 

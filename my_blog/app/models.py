@@ -98,16 +98,10 @@ class Post(BaseModel):
         if key == 'body':  # 改body属性时，顺便更新body_html
             self.on_changed_body(self, value)
 
-    def ping(self):  # TODO:以后改成自动调用，且不应该额外查这一次
+    def ping(self):
         q = Post.update(reviewed=Post.reviewed + 1)\
             .where(Post.id == self.id)  # update是class method
-        q.execute()  # 为什么不是立即调用，而是在teardown阶段才调用
-        # with db_wrapper.database.transaction() as txn:
-        #     q = Post.update(reviewed=Post.reviewed + 1).where(Post.id == self.id)  # update是class method
-        #     q.execute()  # 为什么不是立即调用
-            # txn.commit()
-        # self.reviewed += 1
-        # self.save()
+        q.execute()
 
     @staticmethod
     def on_changed_body(target, value):

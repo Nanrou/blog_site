@@ -6,6 +6,7 @@ from playhouse.flask_utils import PaginatedQuery
 
 from . import main
 from ..models import Post
+from app import cache
 
 
 @main.add_app_template_filter
@@ -35,34 +36,36 @@ month_dict = {'9': '九月布鲁'}
 
 @main.app_context_processor
 def product_month():
-    cc = Calendar(firstweekday=6)
-    now_ = datetime.now()
-    month_html = ''
-    for week in cc.monthdatescalendar(now_.year, now_.month):
-        week_html = ''
-        for day in week:
-            if day.month == now_.month:
-                dh = datetime(year=now_.year, month=now_.month, day=day.day, hour=23, minute=59, second=59)
-                dm = datetime(year=now_.year, month=now_.month, day=day.day)
-                _count = Post.select(Post.timestamp).where(Post.timestamp.between(dm, dh)).count()
-                if not bool(_count):
-                    _class = ''
-                    content = '不宜写作,{}'.format(day)
-                elif _count > 1:
-                    _class = ' class="more"'
-                    content = '哇！这天有{}篇'.format(_count)
+    rv = cache.get('month_content')
+    if rv is None:
+        cc = Calendar(firstweekday=6)
+        now_ = datetime.now()
+        month_html = ''
+        for week in cc.monthdatescalendar(now_.year, now_.month):
+            week_html = ''
+            for day in week:
+                if day.month == now_.month:
+                    dh = datetime(year=now_.year, month=now_.month, day=day.day, hour=23, minute=59, second=59)
+                    dm = datetime(year=now_.year, month=now_.month, day=day.day)
+                    _count = Post.select(Post.timestamp).where(Post.timestamp.between(dm, dh)).count()
+                    if not bool(_count):
+                        _class = ''
+                        content = '不宜写作,{}'.format(day)
+                    elif _count > 1:
+                        _class = ' class="more"'
+                        content = '哇！这天有{}篇'.format(_count)
+                    else:
+                        _class = ' class="less"'
+                        content = '好像有东西,{}'.format(day)
+                    day_html = '<td{class_}><a href="#" data-toggle="tooltip" data-original-title="{content}"><div style="width: 100%; height:100%;"></div></a></td>'\
+                        .format(class_=_class, content=content)
                 else:
-                    _class = ' class="less"'
-                    content = '好像有东西,{}'.format(day)
-                day_html = '<td{class_}><a href="#" data-toggle="tooltip" data-original-title="{content}"><div style="width: 100%; height:100%;"></div></a></td>'\
-                    .format(class_=_class, content=content)
-            else:
-                day_html = '<td class="noday"></td>'
-            week_html += day_html
-        week_html = '<tr>' + week_html + '</tr>'
-        month_html += week_html
+                    day_html = '<td class="noday"></td>'
+                week_html += day_html
+            week_html = '<tr>' + week_html + '</tr>'
+            month_html += week_html
 
-    ss = '''<table class="calendar"><tbody><tr><th class="month" colspan="7">{month}</th></tr>
+        ss = '''<table class="calendar"><tbody><tr><th class="month" colspan="7">{month}</th></tr>
     <tr>
         <th class="sun">Sun</th>
         <th class="mon">Mon</th>
@@ -75,8 +78,10 @@ def product_month():
     {td}
     </tbody>
 </table>'''
-    return dict(product_calendar=ss.format(
-        month=month_dict[str(now_.month)], td=month_html).replace('\n', '').replace('    ', ''))
+        rv = dict(product_calendar=ss.format(
+            month=month_dict[str(now_.month)], td=month_html).replace('\n', '').replace('    ', ''))
+        cache.set('month_content', rv, timeout=5 * 60)
+    return rv
 
 
 if __name__ == '__main__':
