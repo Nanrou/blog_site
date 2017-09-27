@@ -7,6 +7,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_pagedown import PageDown
 from playhouse.flask_utils import FlaskDB
 from werkzeug.contrib.cache import SimpleCache
+from flask_caching import Cache
 
 from config import CONFIG
 
@@ -22,12 +23,11 @@ db_wrapper = FlaskDB()
 mail = Mail()
 debugToolBar = DebugToolbarExtension()
 pagedown = PageDown()
+cache = Cache(config={'CACHE_TYPE': 'simple'})
 
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
-
-cache = SimpleCache()
 
 
 def create_app(config_name):
@@ -42,6 +42,7 @@ def create_app(config_name):
     login_manager.init_app(app)
     debugToolBar.init_app(app)
     pagedown.init_app(app)
+    cache.init_app(app)
 
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)

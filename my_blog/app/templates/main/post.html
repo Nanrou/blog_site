@@ -37,6 +37,7 @@
       </div>
     </div>
 
+    {% cache 60*5, "post_comments", post.title %}
     <h3><strong>Recent Comments :</strong></h3>
     <hr/>
     <ul class="media-list">
@@ -46,9 +47,9 @@
           <img class="media-object img-circle" src="{{ url_for('static', filename = 'favicon.ico') }}"/>
         </a>
         <div class="media-body">
-          <h4 class="media-heading">{{ comment.author.nickname }}
-            <p class="comment_timestamp">at&ensp;{{ comment.timestamp | my_time_format }}</p>
+          <h4 class="media-heading" style="margin: 0;">{{ comment.author.nickname }}
           </h4>
+          <p class="comment_timestamp">at&ensp;{{ comment.timestamp | my_time_format }}</p>
           <p>{{ comment.content }}</p>
           {% for nested in comment.all_quote() %}
             <div class="media">
@@ -56,9 +57,9 @@
                 <img class="media-object img-circle" src="{{ url_for('static', filename = 'favicon.ico') }}"/>
               </a>
               <div class="media-body">
-                <h4 class="media-heading">{{ nested.author.nickname }}&ensp;<i class="fa fa-caret-right"></i>&ensp;{{ nested.quote_comment.author.nickname }}
-                    <p class="comment_timestamp">at&ensp;{{ nested.timestamp | my_time_format }}</p>
+                <h4 class="media-heading" style="margin: 0;">{{ nested.author.nickname }}&ensp;<i class="fa fa-caret-right"></i>&ensp;{{ nested.quote_comment.author.nickname }}
                 </h4>
+                <p class="comment_timestamp">at&ensp;{{ nested.timestamp | my_time_format }}</p>
                 <p>{{ nested.content }}</p>
               </div>
             </div>
@@ -66,6 +67,8 @@
         </div>
       </li>
       {% endfor %}
+    </ul>
+    {% endcache %}
 
     <nav class="container post-pagination">
       <div class="post-pagination-prev">

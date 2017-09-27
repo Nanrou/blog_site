@@ -11,6 +11,7 @@ from markdown import markdown
 import bleach
 
 from . import db_wrapper
+from app import cache
 
 
 class BaseModel(db_wrapper.Model):
@@ -38,6 +39,9 @@ class User(UserMixin, BaseModel):
 
     class Meta:
         db_table = 'users'
+
+    def __repr__(self):
+        return '%s(%s)' % (self.__class__.__name__, self.id)
 
     @property
     def password(self):
@@ -69,6 +73,9 @@ class Category(BaseModel):
             cc.posts_count = cc.cate.select(Post.id).count()
             cc.save()
 
+    def __repr__(self):
+        return '%s(%s)' % (self.__class__.__name__, self.id)
+
 
 class Post(BaseModel):
     title = CharField(max_length=128, index=True)
@@ -87,6 +94,9 @@ class Post(BaseModel):
     class Meta:
         db_table = 'posts'
         order_by = ('-timestamp', 'title')
+
+    def __repr__(self):
+        return '%s(%s)' % (self.__class__.__name__, self.id)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -138,6 +148,10 @@ class Comment(BaseModel):
         order_by = ('timestamp',)
     # TODO 相互回复的关系
 
+    def __repr__(self):
+        return '%s(%s)' % (self.__class__.__name__, self.id)
+
+    # @cache.memoize(5 * 60)
     def all_quote(self):
         for quote in self.quote:
             yield quote
