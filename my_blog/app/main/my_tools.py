@@ -1,6 +1,6 @@
 import re
 from calendar import Calendar
-from datetime import datetime
+from datetime import datetime, date
 
 from playhouse.flask_utils import PaginatedQuery
 
@@ -18,6 +18,22 @@ def my_html_truncate(s, length=255, killwords=False, end='...'):
         return s[:length - len(end)] + end
     result = s[:length - len(end)].rsplit(' ', 1)[0].rsplit('<', 1)[0]
     return re.sub(re.compile(r'</?.*?>'), '', result) + end
+
+
+@main.add_app_template_filter
+def my_time_format(timestamp, verbose=False):
+    _timestamp = date(timestamp.year, timestamp.month, timestamp.day)
+    _now = date.today()
+    _timedelta = (_now - _timestamp).days
+    if _timedelta < 1:
+        _format = '{:%H:%M}'
+    elif _timedelta < 2:
+        _format = '昨天 {:%H:%M}'
+    elif _timedelta < 3:
+        _format = '前天 {:%H:%M}'
+    else:
+        _format = '{:%y/%m/%d %H:%M}'
+    return _format.format(timestamp)
 
 
 class MyPaginatedQuery(PaginatedQuery):

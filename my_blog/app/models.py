@@ -135,6 +135,12 @@ class Comment(BaseModel):
 
     class Meta:
         db_table = 'comments'
-        order_by = ('-timestamp',)
+        order_by = ('timestamp',)
     # TODO 相互回复的关系
+
+    def all_quote(self):
+        for quote in self.quote:
+            yield quote
+            if quote.quote.exists():
+                yield from quote.all_quote()
 

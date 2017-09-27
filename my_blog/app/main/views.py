@@ -29,7 +29,7 @@ def post(id_):
 
     comments = _post.comments.where(Comment.quote_comment.is_null())  # TODO 继续补完这里的逻辑
 
-    return render_template('main/post.html', post=_post, next_post=_next, prev_post=_prev)
+    return render_template('main/post.html', post=_post, next_post=_next, prev_post=_prev, comments=comments)
 
 
 @main.route('/post_img/<string:img_id>')  # 图片的导航
