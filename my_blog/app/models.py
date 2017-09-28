@@ -136,6 +136,7 @@ class Post(BaseModel):
 
 class Comment(BaseModel):
     content = CharField(max_length=255)
+    # content_html = TextField()  # TODO 支持markdown回复
     author = ForeignKeyField(User, related_name='comments')
     post = ForeignKeyField(Post, related_name='comments')
 
@@ -146,7 +147,6 @@ class Comment(BaseModel):
     class Meta:
         db_table = 'comments'
         order_by = ('timestamp',)
-    # TODO 相互回复的关系
 
     def __repr__(self):
         return '%s(%s)' % (self.__class__.__name__, self.id)

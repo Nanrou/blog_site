@@ -36,7 +36,26 @@ jQuery(document).ready(function($) {
     $("#to_top").click(function() {
         $("html,body").animate({"scrollTop":0}, 200);
     });
-
+    
+    var _comment_btn = true;
+    
+    $("#main_comment_btn").click(function() {
+        if (_comment_btn) {
+            $("#main_comment_form").slideDown("middle");
+            $("#main_comment_btn").text("收起");
+            _comment_btn = false; 
+        } else {
+            $("#main_comment_form").slideUp("middle");
+            $("#main_comment_btn").text("说点什么罗");
+            _comment_btn = true; 
+        }
+        
+    });
+    
+    $("#submit").click(function() {
+        $(main_comment_message).fadeIn();
+    });
+    
 });
 
 NProgress.configure({ showSpinner: false });

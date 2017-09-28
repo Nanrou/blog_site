@@ -1,4 +1,5 @@
 {% extends 'main/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block Custom_header %}
 <meta name="description" content="{{ post.title }}">
@@ -37,7 +38,7 @@
       </div>
     </div>
 
-    {% cache 60*5, "post_comments", post.title %}
+    {% cache 60*5, "post_comments", post.title %}  {# TODO 有新回复时手动更新 #}
     <h3><strong>Recent Comments :</strong></h3>
     <hr/>
     <ul class="media-list">
@@ -66,9 +67,30 @@
           {% endfor %}
         </div>
       </li>
+      {% else %}
+        <li class="media">那你摸奶</li>
       {% endfor %}
     </ul>
     {% endcache %}
+    <div class="main_comment">
+      <div>
+        <button class="btn btn-info waves-float" style="margin: 20px 0;" id="main_comment_btn">说点什么罗？</button>
+      </div>
+    <div id="main_comment_form">
+      <div style="display:flex; align-items: center;" >
+        <div class="col-md-4">
+          {% if not current_user.is_authenticated %}
+            <p style="padding: inherit;">简单注册一下罗</p>
+          {% endif %}
+          {{ wtf.quick_form(form) }}
+        </div>
+        <div id="main_comment_message" class="alert alert-warning main_comment_message" >
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+          认证邮件已经发送~  {# TODO ajax赋值 #}
+        </div>
+      </div>
+    </div>
+  </div>
 
     <nav class="container post-pagination">
       <div class="post-pagination-prev">

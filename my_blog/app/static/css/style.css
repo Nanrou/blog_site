@@ -357,6 +357,24 @@ table.calendar td.more {
     
 }
 
+.main_comment{
+    margin: 5px;
+}
+
+
+#main_comment_form{
+    display: none;
+    padding: 10px;
+}
+
+.main_comment_message{
+    display: none;
+    width: 220px;
+    height: 60px;
+}
+
+
+
 .codehilite .hll { background-color: #ffffcc }
 .codehilite  { background: #f8f8f8; }
 .codehilite .c { color: #408080; font-style: italic } /* Comment */

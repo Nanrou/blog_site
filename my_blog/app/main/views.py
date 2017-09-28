@@ -1,9 +1,12 @@
 import os
-from flask import render_template, Response, send_file, request
+from flask import render_template, Response, send_file, request, flash, redirect
 from playhouse.flask_utils import get_object_or_404, PaginatedQuery
+from flask_login import login_required, current_user
+
 
 from . import main
 from ..models import Post, Category, Comment
+from .forms import CommentForm, RegistrationForm
 from .my_tools import MyPaginatedQuery
 
 
@@ -27,9 +30,26 @@ def post(id_):
     _prev = _public_posts.order_by(Post.id).where(Post.id > _post.id).first()
     _next = _public_posts.where(Post.id < _post.id).first()
 
-    comments = _post.comments.where(Comment.quote_comment.is_null())  # TODO 继续补完这里的逻辑
+    comments = _post.comments.where(Comment.quote_comment.is_null())
 
-    return render_template('main/post.html', post=_post, next_post=_next, prev_post=_prev, comments=comments)
+    if current_user.is_authenticated:
+        form = CommentForm()
+    else:
+        form = RegistrationForm()
+
+    return render_template('main/post.html', post=_post,
+                           next_post=_next, prev_post=_prev, comments=comments,
+                           form=form,)
+
+
+@main.route('/post/<int:id_>', methods=['POST'])
+def submit_comment(id_):  # TODO 处理ajax
+    if current_user.is_authenticated:
+        form = CommentForm()
+    else:
+        form = RegistrationForm()
+        flash('mission complete')
+    return render_template(request.url)
 
 
 @main.route('/post_img/<string:img_id>')  # 图片的导航
