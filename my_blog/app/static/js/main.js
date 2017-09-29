@@ -52,8 +52,8 @@ jQuery(document).ready(function($) {
         
     });
     
-    $("#submit").click(function() {
-        $(main_comment_message).fadeIn();
+    $("#submit").click(function() {  // 要改成对应的form的响应
+        $('#main_comment_message').fadeIn();
     });
     
 });
@@ -65,5 +65,51 @@ $(document).ready(function(){
 });
 $(window).on('load', function(){   // jQuery1.8后移除了load，要用on
     NProgress.done();
+    //$(login_form).attr("onsubmit", "return PostData()");
 });  
 
+function PostData() {
+    var _data = $('#login_form').serialize();
+        $.ajax({
+            type: "POST",
+            url: "",
+            data : _data,
+            success: function(msg) {
+                $('#login_message_p').text(msg.error_msg);
+                $('#login_message').fadeIn();
+            }
+        });
+        return false;
+    }
+
+function getCalendar (s) {
+    if (typeof($("#btn_next").attr("disable"))!="undefined") {
+        return
+    }
+    
+    var month = $('.month:first').text();
+    var prev = true;
+    
+    $('#calendar').mLoading('show');
+    
+    if (s == 'next') {
+        prev = false;
+    }
+    var _data = {'month': month, 'prev': prev,}
+    $.ajax({
+        type: "POST",
+        url: "/getcalendar",
+        data : _data,
+        success: function(msg) {
+            $('calendar').text(msg.calendar);
+            
+            $('#calendar').mLoading('hide');
+        },
+        error: function(msg) {
+            $('#calendar').mLoading('hide');
+            $('#calendar_message').fadeIn();
+            $('#btn_prev, #btn_next').attr('disable', 'true');
+            setTimeout("$('#btn_prev, #btn_next').removeAttr('disable');", 5000);
+        }
+    });
+};

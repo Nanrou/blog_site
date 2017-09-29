@@ -2,7 +2,6 @@
 {% import "main/components/_macros.html" as macros %}
 
 {% block main_content %}
-  <div class="col-md-9">
     {% for post in posts %}
     <div class="blog-main">
       <div class="heading-blog">
@@ -36,5 +35,4 @@
     <div class="pagination">
       {{ macros.pagination_widget(pagination, 'main.home') }}
     </div>
-  </div>
 {% endblock %}

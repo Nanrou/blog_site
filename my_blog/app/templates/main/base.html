@@ -23,6 +23,7 @@
   <!-- waves -->
 {#  <link href="{{ url_for('static', filename = 'css/waves.css') }}" rel="stylesheet"> #}
 
+  <link href="{{ url_for('static', filename = 'css/mloading.css') }}" rel="stylesheet">
   <link href="{{ url_for('static', filename = 'css/style.css') }}" rel="stylesheet">
 
   <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
@@ -30,7 +31,9 @@
 
   <!-- waves -->
   <script src="{{ url_for('static', filename = 'js/waves.js') }}"></script>
-
+  <!-- mloading -->
+  <script src="{{ url_for('static', filename = 'js/mloading.js') }}"></script>
+  <!--nprogress -->
   <script src="{{ url_for('static', filename = 'js/nprogress.js') }}"></script>
 
   <!-- Custom js for this theme -->
@@ -91,8 +94,10 @@
   <section>
     <div class="container">
       <div class="row">
+        <div class="col-md-9">
         {% block main_content %}
         {% endblock %}
+        </div>
         <div class="col-md-3">
 
           <ul class="list-group">
@@ -126,7 +131,25 @@
             </li>
           </ul>
           <br />
+          
+          <ul class="list-group">
+            <li class="list-group-item">
+            <button id="btn_prev" class="btn badge" style="background: inherit;float: left;" onclick="getCalendar('prev')">
+                <i class="fa fa-chevron-left fa-lg" style="color: #000"></i>
+            </button>
+            <button id="btn_next" class="btn badge" style="background: inherit;" onclick="getCalendar('next')">
+                <i class="fa fa-chevron-right fa-lg" style="color: #000"></i>
+            </button>
+          <div id="calendar">      
           {{ product_calendar | safe }}
+          </div>
+            </li>
+          <div id="calendar_message" class="alert alert-warning">
+                <button type="button" class="close" onclick="$('#calendar_message').fadeOut();">&times;</button>
+                <p id="login_message_p">好像出错了，等等再试吧 >_<</p>
+            </div>
+          </ul>
+          <br />
           <ul class="list-group">
             <li class="list-group-item">Advrtisements
             </li>

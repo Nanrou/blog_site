@@ -11,7 +11,7 @@ from markdown import markdown
 import bleach
 
 from . import db_wrapper
-from app import cache
+from app import login_manager, cache
 
 
 class BaseModel(db_wrapper.Model):
@@ -25,17 +25,17 @@ class User(UserMixin, BaseModel):
     加个验证码来允许回复就好了，不一定要有密码
     """
 
-    email = CharField(max_length=32, index=True)
+    email = CharField(max_length=32, index=True, unique=True)
     password_hash = CharField(max_length=128, null=True)
 
-    nickname = CharField(max_length=32)
+    nickname = CharField(max_length=32, unique=True, null=True)  # TODO 要判断名字是否有效
     avatar_hash = CharField(max_length=128, null=True)
 
     member_since = DateTimeField(default=datetime.now())
     last_seen = DateTimeField(default=datetime.now())
 
-    confirmed = BooleanField(default=False)
-    intact = BooleanField(default=False)
+    confirmed = BooleanField(default=False)  # 邮箱是否认证了
+    intact = BooleanField(default=False)  # 是否完整，就是是否已经设置密码了
 
     class Meta:
         db_table = 'users'
@@ -57,6 +57,38 @@ class User(UserMixin, BaseModel):
     def ping(self):
         q = User.update(last_seen=datetime.now()).where(User.id == self.id)
         q.execute()
+
+
+class Admin(UserMixin, BaseModel):
+    email = CharField()
+    token_hash = CharField()
+
+    @property
+    def token(self):
+        raise AttributeError('token is not a readable attribute')
+
+    @token.setter
+    def token(self, token):
+        self.token_hash = generate_password_hash(token)
+
+    def verify_token(self, token):
+        return check_password_hash(self.token, token)
+
+
+@login_manager.user_loader
+def user_loader(user_id):
+    return User.get(id=user_id)
+
+
+# @login_manager.request_loader
+# def request_loader(request):
+#     email = request.form.get('email')
+#     admin = Admin.select().where(Admin.email == email).first()
+#     token = request.form.get('token')  # 应该再次加密，因为request中的等于是明文
+#     if admin and admin.verify_token(token):
+#         return admin
+#     else:
+#         return
 
 
 class Category(BaseModel):

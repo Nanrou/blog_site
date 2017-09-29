@@ -348,6 +348,15 @@ table.calendar td.more {
     background: #239A3B;
 }
 
+#calendar_message {
+    display: none;
+    position: absolute;
+    width: 70%;
+    top: 58%;
+    left: 15%;
+    z-index: 999;
+}
+
 .comment_timestamp {
     margin: 0;
     font-size: 16px;
@@ -372,6 +381,7 @@ table.calendar td.more {
     width: 220px;
     height: 60px;
 }
+
 
 
 

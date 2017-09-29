@@ -83,7 +83,7 @@ def create_all():
     row_data = []
     names = ['lulu', 'amao', 'john']
     for n in names:
-        row_data.append({'nickname': n, 'email': 'bbb@cc.com'})
+        row_data.append({'nickname': n, 'email': '{}@cc.com'.format(n)})
 
     User.insert_many(row_data).execute()  # 这个不调用__init__
 
