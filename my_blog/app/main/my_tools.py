@@ -47,22 +47,48 @@ class MyPaginatedQuery(PaginatedQuery):
             super().get_page()
 
 
-month_dict = {'9': '九月布鲁'}
+month_dict = {'1': '一月打机',
+              '2': '二月大力',
+              '3': '三月减肥',
+              '4': '四月失败',
+              '5': '五月干嘛',
+              '6': '六月过半',
+              '7': '七月**',
+              '8': '八月',
+              '9': '九月布鲁',
+              '10': '十月图强',
+              '11': '十一月太迟',
+              '12': '十二月明年见',
+              }
+another_month_dict = {'一月打机': 1,
+                      '二月大力': 2,
+                      '三月减肥': 3,
+                      '四月失败': 4,
+                      '五月干嘛': 5,
+                      '六月过半': 6,
+                      '七月**': 7,
+                      '八月': 8,
+                      '九月布鲁': 9,
+                      '十月图强': 10,
+                      '十一月太迟': 11,
+                      '十二月明年见': 12,
+                      }
 
 
 @main.app_context_processor
-def product_month():
-    rv = cache.get('month_content')
+def product_month(month=None):
+    now_ = datetime.now()
+    month = month or now_.month
+    rv = cache.get('month_content_{}'.format(month))
     if rv is None:
         cc = Calendar(firstweekday=6)
-        now_ = datetime.now()
         month_html = ''
-        for week in cc.monthdatescalendar(now_.year, now_.month):
+        for week in cc.monthdatescalendar(now_.year, month):  # TODO
             week_html = ''
             for day in week:
-                if day.month == now_.month:
-                    dh = datetime(year=now_.year, month=now_.month, day=day.day, hour=23, minute=59, second=59)
-                    dm = datetime(year=now_.year, month=now_.month, day=day.day)
+                if day.month == month:
+                    dh = datetime(year=now_.year, month=month, day=day.day, hour=23, minute=59, second=59)
+                    dm = datetime(year=now_.year, month=month, day=day.day)
                     _count = Post.select(Post.timestamp).where(Post.timestamp.between(dm, dh)).count()
                     if not bool(_count):
                         _class = ''
@@ -95,8 +121,8 @@ def product_month():
     </tbody>
 </table>'''
         rv = dict(product_calendar=ss.format(
-            month=month_dict[str(now_.month)], td=month_html).replace('\n', '').replace('    ', ''))
-        cache.set('month_content', rv, timeout=5 * 60)
+            month=month_dict[str(month)], td=month_html).replace('\n', '').replace('    ', ''))
+        cache.set('month_content_{}'.format(month), rv, timeout=5 * 60)
     return rv
 
 

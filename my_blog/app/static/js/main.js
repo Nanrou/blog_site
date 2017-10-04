@@ -101,7 +101,7 @@ function getCalendar (s) {
         url: "/getcalendar",
         data : _data,
         success: function(msg) {
-            $('calendar').text(msg.calendar);
+            $('#calendar').html(msg.calendar.product_calendar);
             
             $('#calendar').mLoading('hide');
         },

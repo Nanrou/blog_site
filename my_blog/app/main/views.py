@@ -1,5 +1,5 @@
 import os
-from flask import render_template, Response, send_file, request, flash, redirect
+from flask import render_template, Response, send_file, request, flash, redirect, jsonify, abort
 from playhouse.flask_utils import get_object_or_404, PaginatedQuery
 from flask_login import login_required, current_user
 
@@ -7,7 +7,7 @@ from flask_login import login_required, current_user
 from . import main
 from ..models import Post, Category, Comment
 from .forms import CommentForm, RegistrationForm
-from .my_tools import MyPaginatedQuery
+from .my_tools import MyPaginatedQuery, another_month_dict, product_month
 
 
 @main.route('/')
@@ -56,4 +56,24 @@ def submit_comment(id_):  # TODO 处理ajax
 def post_img(img_id):
     img_path = os.path.join('post_img', img_id)
     return send_file(img_path, conditional=True)  # send_file是生成响应的，显式指定conditional才会进行条件判断
+
+
+@main.route('/getcalendar', methods=['POST'])
+def get_calendar():
+    month, prev = request.form.get('month'), request.form.get('prev')
+    month = another_month_dict.get(month)
+    if prev == 'true':
+        month -= 1
+        if month < 1:
+            month = 12
+    else:
+        month += 1
+        if month > 12:
+            month = 1
+    try:
+        calendar = product_month(month)
+    except KeyError:
+        abort(404)
+    else:
+        return jsonify(calendar=calendar)
 
