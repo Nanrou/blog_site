@@ -382,6 +382,16 @@ table.calendar td.more {
     height: 60px;
 }
 
+.float{
+    position: fixed;
+    bottom: 15%;
+    left: 8%;
+}
+
+.float img {
+    width: 88px;
+    height: 88px;
+}
 
 
 

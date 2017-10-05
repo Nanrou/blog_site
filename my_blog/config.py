@@ -13,7 +13,7 @@ class Config:
     MAIL_USERNAME = unfollow.MAIL_USERNAME
     MAIL_PASSWORD = unfollow.MAIL_PASSWORD
     MAIL_USE_TLS = True
-    FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
+    FLASKY_MAIL_SUBJECT_PREFIX = "Nan's Home"
     FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN') or FLASKY_MAIL_SENDER
     UPLOAD_FOLDER = os.path.join(BASEDIR, 'upload_folder')
 

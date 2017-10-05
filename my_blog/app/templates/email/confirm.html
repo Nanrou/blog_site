@@ -1,0 +1,8 @@
+<p>你好呀~ {{ user.username }},</p>
+<p>Welcome to <b>腩肉的小窝</b>!</p>
+<p>激活一下您的账号吧 <a href="{{ url_for('auth.confirm', token=token, _external=True) }}">click here</a>.</p>
+<p>或者你可以复制下面的这个链接：</p>
+<p>{{ url_for('auth.confirm', token=token, _external=True) }}</p>
+<p>此致，敬礼！（滑稽~</p>
+<p>Lulu & Amao 的铲屎官</p>
+<p><small>Note: 回复也没用的哟</small></p>

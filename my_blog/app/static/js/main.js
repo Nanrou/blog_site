@@ -72,11 +72,17 @@ function PostData() {
     var _data = $('#login_form').serialize();
         $.ajax({
             type: "POST",
-            url: "",
+            url: window.location.href,
             data : _data,
             success: function(msg) {
-                $('#login_message_p').text(msg.error_msg);
-                $('#login_message').fadeIn();
+                if (msg.status == 'success')
+                {
+                    window.location.href = window.location.host + msg.next_url
+                }
+                else {
+                    $('#login_message_p').text(msg.error_msg);
+                    $('#login_message').fadeIn(); 
+                }
             }
         });
         return false;

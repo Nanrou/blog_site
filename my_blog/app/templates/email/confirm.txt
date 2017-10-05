@@ -1,0 +1,7 @@
+你好呀~ {{ user.username }}
+Welcome to 腩肉的小窝!
+激活一下您的账号吧
+{{ url_for('auth.confirm', token=token, _external=True) }}</p>
+此致，敬礼！（滑稽~
+Lulu & Amao 的铲屎官
+Note: 回复也没用的哟

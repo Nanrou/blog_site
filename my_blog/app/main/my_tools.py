@@ -76,14 +76,19 @@ another_month_dict = {'一月打机': 1,
 
 
 @main.app_context_processor
-def product_month(month=None):
+def product_month(month=None):  # TODO 加上年份判断
+    """
+    生成目标月份的文章列表结果的html，现在只做了月份判断，并未做年份判断
+    :param month:
+    :return:
+    """
     now_ = datetime.now()
     month = month or now_.month
     rv = cache.get('month_content_{}'.format(month))
     if rv is None:
         cc = Calendar(firstweekday=6)
         month_html = ''
-        for week in cc.monthdatescalendar(now_.year, month):  # TODO
+        for week in cc.monthdatescalendar(now_.year, month):
             week_html = ''
             for day in week:
                 if day.month == month:

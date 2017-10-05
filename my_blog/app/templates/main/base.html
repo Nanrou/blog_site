@@ -184,7 +184,11 @@
   <hr />
 
 <a href="javascript:void(0);" id="to_top" class="is-unvisible">
-<i class="fa fa-arrow-up float-icon waves-circle waves-float"></i>
+  <i class="fa fa-arrow-up float-icon waves-circle waves-float"></i>
+</a>
+<a href="{% if current_user.is_authenticated %}/auth/logout{% else %}/auth/login?next={{ request.path }}{% endif %}" id="float" class="float" data-toggle="tooltip" data-placement="bottom" data-html="true" title="{% if current_user.is_authenticated %}<h4>登出</h4>{% else %}<h4>登陆</h4>{% endif %}">
+  {# TODO 登陆后的弹出菜单：修改个人资料，登出 #}
+    <img class="waves-circle waves-float" src="{% if current_user.is_authenticated %}{{ url_for('static', filename = 'img/amao.jpg') }}{% else %}{{ url_for('static', filename = 'img/lulu.jpg') }}{% endif %}">
 </a>
 {% block footer %}
 {% endblock %}

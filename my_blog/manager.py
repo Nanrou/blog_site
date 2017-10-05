@@ -43,6 +43,41 @@ def update_tables():
     )
 
 
+def create_table_shortcut(*args):
+    db_wrapper.database.connect()
+    db_wrapper.database.drop_tables([*args], safe=True)
+    db_wrapper.database.create_tables([*args], safe=True)
+    db_wrapper.database.close()
+
+
+@manager.command
+def create_user():
+    create_table_shortcut(User)
+    row_data = []
+    names = ['lulu', 'amao', 'john']
+    for n in names:
+        row_data.append({'nickname': n, 'email': '{}@cc.com'.format(n)})
+
+    User.insert_many(row_data).execute()  # 这个不调用__init__
+
+
+@manager.command
+def create_comment():
+    create_table_shortcut(Comment)
+    Comment.create(content='lulu say something', author_id=1, post_id=52, timestamp=datetime.now())
+    time.sleep(0.5)
+    Comment.create(content='amao say something to lulu', author_id=2, post_id=52, timestamp=datetime.now(), quote_comment=1)
+    time.sleep(0.5)
+    Comment.create(content='amao say other thing to lulu', author_id=2, post_id=52, timestamp=datetime.now(), quote_comment=1)
+    time.sleep(0.5)
+    Comment.create(content='lulu say something back to amao', author_id=1, post_id=52, timestamp=datetime.now(), quote_comment=3)
+    time.sleep(0.5)
+    Comment.create(content='john say something to amao', author_id=3, post_id=52, timestamp=datetime.now(), quote_comment=2)
+    time.sleep(0.5)
+    Comment.create(content='john say something', author_id=3, post_id=52, timestamp=datetime.now())
+
+
+
 @manager.command
 def create_all():
     create_tables()
@@ -80,24 +115,6 @@ def create_all():
         pp = Post.create(**{'title': title, 'body': body, 'timestamp': timestamp, 'category': cate})
         pp.save()
 
-    row_data = []
-    names = ['lulu', 'amao', 'john']
-    for n in names:
-        row_data.append({'nickname': n, 'email': '{}@cc.com'.format(n)})
-
-    User.insert_many(row_data).execute()  # 这个不调用__init__
-
-    Comment.create(content='lulu say something', author_id=1, post_id=52, timestamp=datetime.now())
-    time.sleep(0.5)
-    Comment.create(content='amao say something to lulu', author_id=2, post_id=52, timestamp=datetime.now(), quote_comment=1)
-    time.sleep(0.5)
-    Comment.create(content='amao say other thing to lulu', author_id=2, post_id=52, timestamp=datetime.now(), quote_comment=1)
-    time.sleep(0.5)
-    Comment.create(content='lulu say something back to amao', author_id=1, post_id=52, timestamp=datetime.now(), quote_comment=3)
-    time.sleep(0.5)
-    Comment.create(content='john say something to amao', author_id=3, post_id=52, timestamp=datetime.now(), quote_comment=2)
-    time.sleep(0.5)
-    Comment.create(content='john say something', author_id=3, post_id=52, timestamp=datetime.now())
 
 
 if __name__ == '__main__':
