@@ -77,7 +77,7 @@ function PostData() {
             success: function(msg) {
                 if (msg.status == 'success')
                 {
-                    window.location.href = window.location.host + msg.next_url
+                    window.location.href = window.location.protocol + '//' + window.location.host + msg.next_url
                 }
                 else {
                     $('#login_message_p').text(msg.error_msg);
