@@ -385,7 +385,7 @@ table.calendar td.more {
 .float{
     position: fixed;
     bottom: 15%;
-    left: 8%;
+    left: 5%;
 }
 
 .float img {
@@ -393,6 +393,14 @@ table.calendar td.more {
     height: 88px;
 }
 
+@media only screen and (max-width: 768px){
+    .float{
+        display: none;
+    }
+    #to_top{
+        display: none;
+    }
+}
 
 
 .codehilite .hll { background-color: #ffffcc }
