@@ -107,7 +107,7 @@
             {% for category in cc_pr %}
             <li class="list-group-item">
               <span class="badge">{{ category.posts_count }}</span>
-              {{ category.category }}
+              <a href="/search?wd={{ category.cate }}" style="color: #333">{{ category.category }}</a>
             </li>
             {% endfor %}
             <li class="list-group-item">

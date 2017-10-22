@@ -33,7 +33,7 @@ def verify_login():
                 login_user(user, form.remember_me.data)
                 return jsonify({
                     'status': 'success',
-                    'next_url': request.args.get('next')  or url_for('main.index'),
+                    'next_url': request.args.get('next') or url_for('main.index'),
                 })
 
     return jsonify({
@@ -66,8 +66,10 @@ def register():
             except IntegrityError:
                 pass  # TODO 针对冲突怎么处理
             flash('确认邮件已经发送到您的邮箱了哦')
-            return redirect(url_for('main.index'))
+            return redirect(url_for('main.home'))
         else:  # 注意这个重定向
             return redirect(url_for('auth.register'))
     return render_template('auth/register.html', form=form)
+
+
 

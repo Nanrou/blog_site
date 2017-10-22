@@ -1,0 +1,17 @@
+{% extends 'main/base.html' %}
+{% import "main/components/_macros.html" as macros %}
+
+{% block main_content %}
+<div class="blog-main">
+  {% for post in res %}
+  <div class="heading-blog" style="border-bottom: solid">
+    <a href="{{ url_for('main.post', id_=post.id) }}">
+      {{ post.title }}
+    </a>
+    <div class="blog-info">
+      <span class="label label-primary">{{ post.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

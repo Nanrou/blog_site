@@ -5,18 +5,11 @@
 {% block main_content %}
 <div style="display: flex; align-items: center;">
   <div class="col-md-6" style="margin-bottom: 20px;">
-    {{ wtf.quick_form(form, action="", id="login_form") }}
+    {{ wtf.quick_form(form) }}
   </div>
   <div id="login_message" class="alert alert-warning" style="display: none;width: 220px;">
     <button type="button" class="close" onclick="$('#login_message').fadeOut();">&times;</button>
     <p id="login_message_p" ></p>
   </div>
 </div>
-{% endblock %}
-{% block footer %}
-<script>
-$(window).on('load', function(){
-    $(login_form).attr("onsubmit", "return PostData()");
-});
-</script>
 {% endblock %}

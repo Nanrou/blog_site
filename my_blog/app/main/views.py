@@ -45,7 +45,7 @@ def post(id_):
 @main.route('/post/<int:id_>', methods=['POST'])
 def submit_comment(id_):  # TODO 处理ajax
     if current_user.is_authenticated:
-        form = CommentForm()
+        form = CommentForm()  # TODO
     else:
         form = RegistrationForm()
         flash('mission complete')
@@ -77,3 +77,12 @@ def get_calendar():
     else:
         return jsonify(calendar=calendar)
 
+
+@main.route('/search')
+def search():
+    cate_dict = {'Django': 1, 'daily': 2, 'booknote': 3, 'leetcode': 4, 'python': 5, 'translation': 6, 'linux': 7}
+
+    wd = request.args.get('wd')
+    if wd in cate_dict:
+        res = Category.get(id=cate_dict[wd]).posts
+        return render_template('main/search_result.html', res=res)

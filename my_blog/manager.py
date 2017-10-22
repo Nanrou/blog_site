@@ -77,7 +77,6 @@ def create_comment():
     Comment.create(content='john say something', author_id=3, post_id=52, timestamp=datetime.now())
 
 
-
 @manager.command
 def create_all():
     create_tables()
@@ -88,12 +87,13 @@ def create_all():
     bodys = []
     post_cate = []
 
-    cates = ['Django', '日常踩坑', '读书笔记', 'LeetCode', 'python', '一些翻译', 'linux']
-    cate_dict = dict((k, v) for k, v in zip(cates, range(1, len(cates) + 1)))
-    for c in cates:
-        cc = Category(category=c)
+    cate = ['Django', '日常踩坑', '读书笔记', 'LeetCode', 'python', '一些翻译', 'linux']
+    cate_for_short = ['Django', 'daily', 'booknote', 'leetcode', 'python', 'translation', 'linux']
+    for _c, _s in zip(cate, cate_for_short):
+        cc = Category(category=_c, cate=_s)
         cc.save()
 
+    cate_dict = dict((k, v) for k, v in zip(cate, range(1, len(cate) + 1)))  # 为文章匹配上分类的序号
     with open('./post/nnnote.txt', 'r', encoding='utf-8') as rf:
         for line in rf.readlines():
             if line.strip():
@@ -115,6 +115,7 @@ def create_all():
         pp = Post.create(**{'title': title, 'body': body, 'timestamp': timestamp, 'category': cate})
         pp.save()
 
+    Category.count_posts()
 
 
 if __name__ == '__main__':

@@ -3,9 +3,10 @@ from random import randint
 from datetime import datetime
 import re
 
-from flask import url_for
+from flask import url_for, current_app
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadData
 from peewee import CharField, IntegerField, DateTimeField, TextField, BooleanField, ForeignKeyField
 from markdown import markdown
 import bleach
@@ -54,6 +55,10 @@ class User(UserMixin, BaseModel):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def generate_confirmation_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
+        return s.dumps({'confirm': self.id})
+
     def ping(self):
         q = User.update(last_seen=datetime.now()).where(User.id == self.id)
         q.execute()
@@ -93,6 +98,7 @@ def user_loader(user_id):
 
 class Category(BaseModel):
     category = CharField(max_length=32, index=True)
+    cate = CharField(max_length=32, index=True)
     posts_count = IntegerField(default=0)
 
     class Meta:
@@ -102,7 +108,7 @@ class Category(BaseModel):
     def count_posts(cls):  # 直接得到分类数量，不用到时再数。可以手动或者自动去执行
         for i in range(1, cls.select(cls.id).count()+1):
             cc = cls.get(id=i)
-            cc.posts_count = cc.cate.select(Post.id).count()
+            cc.posts_count = cc.posts.select(Post.id).count()
             cc.save()
 
     def __repr__(self):
