@@ -1,0 +1,15 @@
+{% extends 'auth/login.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block wtf_content %}
+<div style="display: flex; align-items: center;">
+  <div class="col-md-6" style="margin-bottom: 20px;">
+    {{ wtf.quick_form(form) }}
+  </div>
+  <div id="login_message" class="alert alert-warning" style="display: none;width: 220px;">
+    <button type="button" class="close" onclick="$('#login_message').fadeOut();">&times;</button>
+    <p id="login_message_p" ></p>
+  </div>
+</div>
+{% endblock %}

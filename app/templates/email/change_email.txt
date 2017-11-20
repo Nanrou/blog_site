@@ -1,0 +1,11 @@
+你好呀~ {{ user.username }}
+
+点一下这个链接来重置你的邮箱啦:
+
+{{ url_for('auth.change_email', token=token, _external=True) }}
+
+此致，敬礼！（滑稽~
+
+Lulu & Amao 的铲屎官
+
+Note: 回复也没用的哟

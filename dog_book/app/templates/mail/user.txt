@@ -1,1 +1,0 @@
-A new guy is in, who is {{ user }}

@@ -1,0 +1,122 @@
+{% extends 'main/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block Custom_header %}
+<meta name="description" content="{{ post.title }}">
+
+<title>腩肉的小站 {{ post.title }}</title>
+{% endblock %}
+
+
+{% block custom_script %}
+  {{ moment.include_moment() }}
+  {{ moment.lang("zh-cn") }}
+{% endblock %}
+
+{% block main_content %}
+    <div class="blog-main">
+      <div class="heading-blog">
+        {{ post.title }}
+      </div>
+      <a class="image-featured" href="javascript:void(0);">
+        <img src="{{ post.img_path }}" class="img-responsive img-rounded"/>
+      </a>
+      <div class="blog-info">
+        <span class="label label-primary">{{ post.timestamp }}</span>
+        {% if post.category %}
+          <span class="label label-success">{{ post.category.category }}</span>
+        {% endif %}
+        <span class="label label-danger">By Nanrou</span>
+        <span class="label label-info">
+          <i class="fa fa-eye"></i>&ensp;{{ post.reviewed + 1}}
+        </span>
+      </div>
+      <div class="blog-txt">
+        {{ post.body_html | safe }}
+        <p>此文章发布于&ensp;{{ moment(post.timestamp).fromNow() }}，可能由于时间关系已不再适用，请结合实际情况参考。</p>
+      </div>
+    </div>
+
+    {% cache 60*5, "post_comments", post.title %}  {# TODO 有新回复时手动更新 #}
+    <h3><strong>Recent Comments :</strong></h3>
+    <hr/>
+    <ul class="media-list">
+      {% for comment in comments %}
+      <li class="media">
+        <a class="pull-left" href="#">
+          <img class="media-object img-circle" src="{{ url_for('static', filename = 'favicon.ico') }}"/>
+        </a>
+        <div class="media-body">
+          <h4 class="media-heading" style="margin: 0;">{{ comment.author.nickname }}
+          </h4>
+          <p class="comment_timestamp">at&ensp;{{ comment.timestamp | my_time_format }}</p>
+          <p>{{ comment.content }}</p>
+          {% for nested in comment.all_quote() %}
+            <div class="media">
+              <a class="pull-left" href="#">
+                <img class="media-object img-circle" src="{{ url_for('static', filename = 'favicon.ico') }}"/>
+              </a>
+              <div class="media-body">
+                <h4 class="media-heading" style="margin: 0;">{{ nested.author.nickname }}&ensp;<i class="fa fa-caret-right"></i>&ensp;{{ nested.quote_comment.author.nickname }}
+                </h4>
+                <p class="comment_timestamp">at&ensp;{{ nested.timestamp | my_time_format }}</p>
+                <p>{{ nested.content }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </li>
+      {% else %}
+        <li class="media">怎么没人</li>
+      {% endfor %}
+    </ul>
+    {% endcache %}
+    <div class="main_comment">
+      <div>
+        <button class="btn btn-info waves-float" style="margin: 20px 0;" id="main_comment_btn">说点什么罗？</button>
+      </div>
+    <div id="main_comment_form">
+      <div style="display:flex; align-items: center;" >
+        <div class="col-md-4">
+          {% if not current_user.is_authenticated %}
+            <p style="padding: inherit;">简单注册一下罗~  <a href="/auth/register">点我</a></p>
+          {% endif %}
+        </div>
+        {#
+        <div id="main_comment_message" class="alert alert-warning main_comment_message" >
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+          认证邮件已经发送~
+        </div>
+        #}
+        {# TODO ajax赋值 #}
+      </div>
+    </div>
+  </div>
+
+    <nav class="container post-pagination">
+      <div class="post-pagination-prev">
+        <a class="post-pagination-link" href="{% if prev_post %}{{ url_for('main.post', id_=prev_post.id) }}{% else %}{{ url_for('main.home') }}{% endif %}">
+          <div class="tips">
+            <i class="fa fa-angle-left"></i>
+            Prev
+          </div>
+          <h4 class="title">
+            {% if prev_post %}{{ prev_post.title }}{% else %}没有了{% endif %}
+          </h4>
+        </a>
+      </div>
+      <div class="post-pagination-next">
+        <a class="post-pagination-link" href="{% if next_post %}{{ url_for('main.post', id_=next_post.id) }}{% else %}{{ url_for('main.home') }}{% endif %}">
+          <div class="tips">
+            Next
+            <i class="fa fa-angle-right"></i>
+          </div>
+          <h4 class="title">
+            {% if next_post %}{{ next_post.title }}{% else %}没有了{% endif %}
+          </h4>
+        </a>
+      </div>
+    </nav>
+{% endblock %}
+{% block footer %}
+{% endblock %}
