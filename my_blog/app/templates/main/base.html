@@ -64,13 +64,14 @@
             <a class="nav-link page-scroll" href="{{ url_for('main.home') }}">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link page-scroll" href="about.html">About</a>
+            <a class="nav-link page-scroll" href="about.html">About Me</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link page-scroll" href="{{ url_for('main.post') }}">Sample Post</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link page-scroll" href="contact.html">Contact</a>
+            <a id="contanct_composition " class="nav-link page-scroll" href="javascript:void(0)" 
+            data-toggle="popover" data-placement="bottom" data-html="true" data-trigger="hover"
+            data-content='<span><i class="fa fa-google" aria-hidden="true"></i>
+            dnanrou@gmail.com
+            </span>'>Contact</a>
           </li>
         </ul>
       </div>
@@ -102,7 +103,7 @@
 
           <ul class="list-group">
             <li class="list-group-item">
-              <strong>Main Categories</strong>
+              <strong>主要分类</strong>
             </li>
             {% for category in cc_pr %}
             <li class="list-group-item">
@@ -111,23 +112,25 @@
             </li>
             {% endfor %}
             <li class="list-group-item">
-              <strong>Other Categories</strong>
+              <strong>其他</strong>
             </li>
             <li class="list-group-item">
-              <span class="badge">104</span>
-              Technology
+              <i class="fa fa-github" aria-hidden="true"></i>&nbsp;
+              <a href="https://github.com/Nanrou" target="_blank">GitHub</a>
             </li>
             <li class="list-group-item">
-              <span class="badge">34</span>
-              Blogging
+              <image id="lp_img" class="lp" src="{{ url_for('static', filename = 'css/lp.png') }}"></image>&nbsp;
+              <a href="javascript:void(0)" data-toggle="popover" data-placement="bottom" data-html="true" data-trigger="hover" data-delay="0"
+            data-content='<image src="{{ url_for('static', filename = 'css/lp.jpg') }}"></image>'">露露啊毛和你说</a>
             </li>
             <li class="list-group-item">
-              <span class="badge">10</span>
-              Information
+              <i class="fa fa-book" aria-hidden="true"></i>&nbsp;
+              <a href="http://www.superxiaoshuo.com" target="_blank">超级小说</a>
             </li>
             <li class="list-group-item">
-              <span class="badge">50</span>
-              Security
+              <i class="fa fa-weixin" aria-hidden="true"></i>&nbsp;
+              <a href="javascript:void(0)" data-toggle="popover" data-placement="bottom" data-html="true" data-trigger="hover" data-delay="0"
+            data-content='<image src="{{ url_for('static', filename = 'css/wx_mp.jpg') }}"></image>'">毛小露</a>
             </li>
           </ul>
           <br />
@@ -150,33 +153,6 @@
             </div>
           </ul>
           <br />
-          <ul class="list-group">
-            <li class="list-group-item">Advrtisements
-            </li>
-            <li class="list-group-item">
-              <a href="#">
-                <img src="" class="img-responsive" />
-              </a>
-              <br />
-              <a href="#">
-                <img src="" class="img-responsive" />
-              </a>
-            </li>
-          </ul>
-
-          <br />
-          <div>
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h3 class="panel-title">Subscribe For Updates</h3>
-              </div>
-              <div class="panel-body">
-                <input type="text" class="form-control" placeholder="Your Email" />
-                <hr />
-                <a href="#" class="btn btn-info btn-sm btn-block">subscribe</a>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -195,6 +171,7 @@
 </div>
 <script>
 $(function () { $("[data-toggle='tooltip']").tooltip(); });
+$(function () { $("[data-toggle='popover']").popover({delay: {show: 0, hide: 800}}); });
 </script>
 </body>
 </html>

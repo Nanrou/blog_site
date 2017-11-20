@@ -120,3 +120,6 @@ function getCalendar (s) {
         }
     });
 };
+
+function cp_mail(){
+}

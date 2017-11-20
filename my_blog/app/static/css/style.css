@@ -348,6 +348,18 @@ table.calendar td.more {
     background: #239A3B;
 }
 
+li.list-group-item a {
+    color: #333
+}
+
+img.lp {
+    width: 18px; 
+    height: 18px; 
+    position: relative; 
+    bottom: 3px
+}
+
+
 #calendar_message {
     display: none;
     position: absolute;
