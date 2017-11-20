@@ -1,3 +1,5 @@
+import logging
+
 from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
@@ -10,8 +12,6 @@ from flask_caching import Cache
 
 from config import CONFIG
 
-import logging
-
 logger = logging.getLogger('peewee')
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler())
@@ -22,7 +22,7 @@ db_wrapper = FlaskDB()
 mail = Mail()
 debugToolBar = DebugToolbarExtension()
 pagedown = PageDown()
-cache = Cache(config={'CACHE_TYPE': 'simple'})
+cache = Cache(config={'CACHE_TYPE': 'simple'})  # 添加选项到config中去
 
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'

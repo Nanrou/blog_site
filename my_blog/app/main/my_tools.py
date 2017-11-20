@@ -98,14 +98,17 @@ def product_month(month=None):  # TODO 加上年份判断
                     if not bool(_count):
                         _class = ''
                         content = '不宜写作,{}'.format(day)
+                        action = 'javascript:void(0);'
                     elif _count > 1:
                         _class = ' class="more"'
                         content = '哇！这天有{}篇'.format(_count)
+                        action = '/search?date={:%Y-%m-%d}'.format(dm)
                     else:
                         _class = ' class="less"'
                         content = '好像有东西,{}'.format(day)
-                    day_html = '<td{class_}><a href="#" data-toggle="tooltip" data-original-title="{content}"><div style="width: 100%; height:100%;"></div></a></td>'\
-                        .format(class_=_class, content=content)
+                        action = '/search?date={:%Y-%m-%d}'.format(dm)
+                    day_html = '<td{class_}><a href="{action}" data-toggle="tooltip" data-original-title="{content}"><div style="width: 100%; height:100%;"></div></a></td>'\
+                        .format(class_=_class, action=action, content=content)
                 else:
                     day_html = '<td class="noday"></td>'
                 week_html += day_html

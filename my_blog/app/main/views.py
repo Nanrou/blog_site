@@ -1,4 +1,7 @@
 import os
+import re
+from datetime import datetime
+
 from flask import render_template, Response, send_file, request, flash, redirect, jsonify, abort
 from playhouse.flask_utils import get_object_or_404, PaginatedQuery
 from flask_login import login_required, current_user
@@ -82,7 +85,19 @@ def get_calendar():
 def search():
     cate_dict = {'Django': 1, 'daily': 2, 'booknote': 3, 'leetcode': 4, 'python': 5, 'translation': 6, 'linux': 7}
 
-    wd = request.args.get('wd')
-    if wd in cate_dict:
-        res = Category.get(id=cate_dict[wd]).posts
+    cate = request.args.get('cate')
+    if cate in cate_dict:
+        res = Category.get(id=cate_dict[cate]).posts
         return render_template('main/search_result.html', res=res)
+        
+    _date = request.args.get('date')
+    if re.match('\d{4}-\d{2}-\d{2}', _date):
+        y, m, d = [int(s) for s in _date.split('-')]
+        dh = datetime(year=y, month=m, day=d, hour=23, minute=59, second=59)
+        dm = datetime(year=y, month=m, day=d)
+        res = Post.select().where(Post.timestamp.between(dm, dh))
+        return render_template('main/search_result.html', res=res)
+
+@main.route('/about_me')
+def about_me():
+    return render_template('main/about_me.html')

@@ -116,6 +116,13 @@ def create_all():
         pp.save()
 
     Category.count_posts()
+    
+from update_time import add_re
+
+
+@manager.command
+def upt():
+    add_re(Post)
 
 
 if __name__ == '__main__':

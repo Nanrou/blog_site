@@ -68,6 +68,7 @@ def register():
             flash('确认邮件已经发送到您的邮箱了哦')
             return redirect(url_for('main.home'))
         else:  # 注意这个重定向
+            flash('请正确输入资料')
             return redirect(url_for('auth.register'))
     return render_template('auth/register.html', form=form)
 
