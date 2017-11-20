@@ -40,7 +40,8 @@ class ProductionConfig(Config):
     DEBUG = False
     DATABASE_URL = os.environ.get('DATABASE') or 'sqlite:///default.db'
     DATABASE = SqliteDatabase('./default.db', autocommit=False)
-    CACHE_TYPE = 'RedisCache'
+    #CACHE_TYPE = 'simple'
+    CACHE_TYPE = 'redis'
     CACHE_REDIS_HOST = '172.17.0.3'
     CACHE_REDIS_DB = '3'
 

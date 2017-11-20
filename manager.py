@@ -9,7 +9,7 @@ from app import create_app, db_wrapper
 from app.models import User, Post, Category, Comment
 
 
-app = create_app(os.environ.get('FLASK_CONFIG') or 'default')
+app = create_app(os.environ.get('FLASK_CONFIG') or 'pro')
 manager = Manager(app)
 
 
