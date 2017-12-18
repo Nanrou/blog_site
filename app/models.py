@@ -155,7 +155,7 @@ class Category(BaseModel):
 
     @classmethod
     def count_posts(cls):  # 直接得到分类数量，不用到时再数。可以手动或者自动去执行
-        for i in range(1, cls.select(cls.id).count()+1):
+        for i in range(1, cls.select(cls.id).count() + 1):
             cc = cls.get(id=i)
             cc.posts_count = cc.posts.select(Post.id).count()
             cc.save()
@@ -182,13 +182,13 @@ class Post(BaseModel):
         db_table = 'posts'
         order_by = ('-timestamp', 'title')
 
-    def __repr__(self):
-        return '%s(%s)' % (self.__class__.__name__, self.id)
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.img_path is None:
             self.img_path = url_for('static', filename='img/pic0{}.jpg'.format(str(randint(1, 7))))
+
+    def __repr__(self):
+        return '%s(%s)' % (self.__class__.__name__, self.id)
 
     def __setattr__(self, key, value):
         super().__setattr__(key, value)
@@ -196,7 +196,7 @@ class Post(BaseModel):
             self.on_changed_body(self, value)
 
     def ping(self):
-        q = Post.update(reviewed=Post.reviewed + 1)\
+        q = Post.update(reviewed=Post.reviewed + 1) \
             .where(Post.id == self.id)  # update是class method
         q.execute()
 
@@ -210,6 +210,7 @@ class Post(BaseModel):
                      extensions=['markdown.extensions.fenced_code', 'markdown.extensions.codehilite']),
             tags=allowed_tags, strip=True
         ))  # 先将文本html化，然后清除多余的标签，最外层的函数是将URL转换成<a>
+
         # 手动生成img的标签
         img_pattern = re.compile('!\[(.*)\]\((.*)\)')  # markdown语法： ![description](href)
         _match = img_pattern.finditer(value)  # 查找内容
@@ -244,4 +245,3 @@ class Comment(BaseModel):
             yield quote
             if quote.quote.exists():
                 yield from quote.all_quote()
-

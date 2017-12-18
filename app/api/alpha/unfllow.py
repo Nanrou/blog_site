@@ -1,0 +1,2 @@
+USERNAME = 'nanrou'
+PASSWORD = 'luluamao'

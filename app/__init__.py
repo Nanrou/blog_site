@@ -50,4 +50,7 @@ def create_app(config_name):
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
+    from .api.alpha import api as api_alpha_blueprint
+    app.register_blueprint(api_alpha_blueprint, url_prefix='/api/alpha')
+
     return app
