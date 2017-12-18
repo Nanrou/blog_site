@@ -21,3 +21,8 @@ def new_post():
         return jsonify({'status': 'success'})
     else:
         return jsonify({'status': 'wrong type'})
+
+
+@api.route('/hello')
+def hello():
+    return jsonify({'status': 'success'})
