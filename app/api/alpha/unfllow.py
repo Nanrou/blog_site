@@ -1,2 +1,0 @@
-USERNAME = 'nanrou'
-PASSWORD = 'luluamao'
