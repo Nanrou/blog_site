@@ -6,7 +6,6 @@ from flask import render_template, Response, send_file, request, flash, redirect
 from playhouse.flask_utils import get_object_or_404, PaginatedQuery
 from flask_login import login_required, current_user
 
-
 from . import main
 from ..models import Post, Category, Comment
 from .forms import CommentForm, RegistrationForm
@@ -42,7 +41,7 @@ def post(id_):
 
     return render_template('main/post.html', post=_post,
                            next_post=_next, prev_post=_prev, comments=comments,
-                           form=form,)
+                           form=form, )
 
 
 @main.route('/post/<int:id_>', methods=['POST'])
@@ -65,16 +64,19 @@ def post_img(img_id):
 def get_calendar():
     month, prev = request.form.get('month'), request.form.get('prev')
     month = another_month_dict.get(month)
+    _flag = None
     if prev == 'true':
         month -= 1
         if month < 1:
             month = 12
+            _flag = 'last_year'
     else:
         month += 1
         if month > 12:
             month = 1
+            _flag = 'next_year'
     try:
-        calendar = product_month(month)
+        calendar = product_month(month, _flag)
     except KeyError:
         abort(404)
     else:
@@ -89,7 +91,7 @@ def search():
     if cate in cate_dict:
         res = Category.get(id=cate_dict[cate]).posts
         return render_template('main/search_result.html', res=res)
-        
+
     _date = request.args.get('date')
     if re.match('\d{4}-\d{2}-\d{2}', _date):
         y, m, d = [int(s) for s in _date.split('-')]
@@ -97,6 +99,7 @@ def search():
         dm = datetime(year=y, month=m, day=d)
         res = Post.select().where(Post.timestamp.between(dm, dh))
         return render_template('main/search_result.html', res=res)
+
 
 @main.route('/about_me')
 def about_me():

@@ -76,14 +76,22 @@ another_month_dict = {'一月打机': 1,
 
 
 @main.app_context_processor
-def product_month(month=None):  # TODO 加上年份判断
+def product_month(month=None, flag=None):
     """
     生成目标月份的文章列表结果的html，现在只做了月份判断，并未做年份判断
     :param month:
+    :param flag:
     :return:
     """
     now_ = datetime.now()
     month = month or now_.month
+    if flag == 'last_year':
+        year = now_.year - 1
+    elif flag == 'next_year':
+        year = now_.year + 1
+    else:
+        year = now_.year
+
     rv = cache.get('month_content_{}'.format(month))
     if rv is None:
         cc = Calendar(firstweekday=6)
@@ -92,8 +100,8 @@ def product_month(month=None):  # TODO 加上年份判断
             week_html = ''
             for day in week:
                 if day.month == month:
-                    dh = datetime(year=now_.year, month=month, day=day.day, hour=23, minute=59, second=59)
-                    dm = datetime(year=now_.year, month=month, day=day.day)
+                    dh = datetime(year=year, month=month, day=day.day, hour=23, minute=59, second=59)
+                    dm = datetime(year=year, month=month, day=day.day)
                     _count = Post.select(Post.timestamp).where(Post.timestamp.between(dm, dh)).count()
                     if not bool(_count):
                         _class = ''
